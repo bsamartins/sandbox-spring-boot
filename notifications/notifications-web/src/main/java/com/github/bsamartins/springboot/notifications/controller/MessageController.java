@@ -1,4 +1,4 @@
-package com.github.bsamartins.springboot.notifications;
+package com.github.bsamartins.springboot.notifications.controller;
 
 import com.github.bsamartins.springboot.notifications.domain.Event;
 import com.github.bsamartins.springboot.notifications.service.EventService;
@@ -6,9 +6,9 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.Message;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
@@ -23,8 +23,8 @@ public class MessageController {
     @Autowired
     private Publisher<Message<Event>> jmsReactiveSource;
 
-    @RequestMapping(value = "/api/messages/new", method = RequestMethod.GET)
-    public void sendMessage(@RequestParam("message") String input) {
+    @RequestMapping(value = "/api/messages", method = RequestMethod.POST)
+    public void sendMessage(@RequestBody String input) {
         Event event = new Event();
         event.setContent(input);
         event.setTimestamp(new Date());

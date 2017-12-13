@@ -1,0 +1,3 @@
+include 'notifications-ui'
+include 'notifications-web'
+

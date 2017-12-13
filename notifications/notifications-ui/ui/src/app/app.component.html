@@ -1,0 +1,20 @@
+<!--<div class="ui fixed inverted menu">-->
+  <!--<div class="ui container">-->
+    <!--<a href="#" class="item">Login</a>-->
+  <!--</div>-->
+<!--</div>-->
+
+<div class="ui main text container">
+  <form class="ui form" #messageForm="ngForm">
+    <div class="field">
+      <label>Message</label>
+      <input type="text" name="message" placeholder="Message" required="true" ngModel>
+    </div>
+    <button class="ui button" (click)="messageForm.reset()">Reset</button>
+    <button class="ui button" (click)="submit(messageForm)" [disabled]="messageForm.invalid">Send</button>
+  </form>
+
+  <div class="ui list">
+    <div *ngFor="let message of messages" class="item">{{ message.content }}</div>
+  </div>
+</div>

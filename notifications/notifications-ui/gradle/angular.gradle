@@ -1,5 +1,9 @@
 def ANGULAR_GROUP = 'Angular'
 
+task npmInstall(type: Exec) {
+    workingDir "${this.project.projectDir}/ui"
+    commandLine 'npm', 'install'
+}
 
 task ngAssemble(type: Exec) {
     workingDir "${this.project.projectDir}/ui"
@@ -8,3 +12,4 @@ task ngAssemble(type: Exec) {
 
 ngAssemble.group = ANGULAR_GROUP
 ngAssemble.description = 'Builds angular project'
+ngAssemble.dependsOn += npmInstall

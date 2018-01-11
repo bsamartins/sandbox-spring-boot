@@ -1,7 +1,5 @@
 apply plugin: 'java'
 apply from: 'gradle/angular.gradle'
 
-println "${this.project.projectDir}"
-
 jar.dependsOn.add(ngAssemble)
 assemble.dependsOn(ngAssemble)

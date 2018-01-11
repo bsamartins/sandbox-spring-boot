@@ -37,4 +37,9 @@ public class MessageController {
                 .map(Message::getPayload);
     }
 
+    @RequestMapping(value = "/api/messages/echo", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public String test() {
+        return "Hello World";
+    }
+
 }

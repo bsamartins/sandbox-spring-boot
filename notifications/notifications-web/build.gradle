@@ -31,12 +31,22 @@ ext {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-amqp')
+    compile('org.springframework.boot:spring-boot-starter-tomcat')
     compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-activemq')
+    compile('org.springframework.boot:spring-boot-starter-amqp')
+
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    runtime('org.hsqldb:hsqldb:2.4.0')
+    runtime('javax.xml.bind:jaxb-api:2.3.0')
+
+
     compile('org.springframework.integration:spring-integration-core')
     compile('org.springframework.integration:spring-integration-jms')
     compile project(':notifications-ui')
+
+    compile "io.jsonwebtoken:jjwt:0.7.0"
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
@@ -47,3 +57,4 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+

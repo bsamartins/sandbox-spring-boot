@@ -35,9 +35,18 @@ spring:
       qos-enabled: true
       receive-timeout: PT1S
       time-to-live: PT36S
-
+  jpa:
+    hibernate:
+      ddl-auto: update
 logging:
   level:
       root: info
       com.github.bsamartins.springboot.notifications: debug
       org.springframework: info
+      org.springframework.security: debug
+
+app:
+  security:
+    jwt:
+      secret: SecretKeyToGenJWTs
+      duration: PT10M

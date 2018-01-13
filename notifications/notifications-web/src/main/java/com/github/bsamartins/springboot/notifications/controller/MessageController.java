@@ -1,45 +1,55 @@
 package com.github.bsamartins.springboot.notifications.controller;
 
-import com.github.bsamartins.springboot.notifications.domain.Event;
-import com.github.bsamartins.springboot.notifications.service.EventService;
+import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
+import com.github.bsamartins.springboot.notifications.security.CustomUser;
+import com.github.bsamartins.springboot.notifications.service.MessageService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.Message;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import static com.github.bsamartins.springboot.notifications.controller.SseHelper.sse;
 
 @RestController
+@RequestMapping("/api/messages")
 public class MessageController {
 
     @Autowired
-    private EventService eventService;
+    private MessageService messageService;
 
     @Autowired
-    private Publisher<Message<Event>> jmsReactiveSource;
+    private Publisher<org.springframework.messaging.Message<Message>> jmsReactiveSource;
 
-    @RequestMapping(value = "/api/messages", method = RequestMethod.POST)
-    public void sendMessage(@RequestBody String input) {
-        Event event = new Event();
-        event.setContent(input);
-        event.setTimestamp(new Date());
-        eventService.send(event);
+    @RequestMapping(method = RequestMethod.POST)
+    public Mono<Message> sendMessage(@RequestBody String input, @AuthenticationPrincipal CustomUser authUser) {
+        return Mono.just(input).map(text -> {
+            Message message = new Message();
+            message.setText(text);
+            message.setTimestamp(LocalDateTime.now());
+            message.setUserId(authUser.getUser().getId());
+            return message;
+        }).flatMap(messageService::save);
     }
 
-    @RequestMapping(value = "/api/messages", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Event> getMessages() {
+    @RequestMapping(value = "/stream", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Message>> streamMessages() {
         return Flux.from(jmsReactiveSource)
-                .map(Message::getPayload);
+                .map(msg -> ServerSentEvent.builder(msg.getPayload()).build())
+                .mergeWith(sse());
     }
 
-    @RequestMapping(value = "/api/messages/echo", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public String test() {
-        return "Hello World";
+    @RequestMapping(method = RequestMethod.GET)
+    public Mono<Iterable<Message>> getMessages() {
+        return messageService.getMessages();
     }
 
 }

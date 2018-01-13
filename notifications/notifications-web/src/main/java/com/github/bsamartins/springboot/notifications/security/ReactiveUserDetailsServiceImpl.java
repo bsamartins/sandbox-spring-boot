@@ -17,10 +17,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         Optional<UserDetails> user =  Optional.ofNullable(userRepository.findByUsername(username))
-                .map(u -> new org.springframework.security.core.userdetails.User(
-                        u.getUsername(),
-                        u.getPassword(),
-                        Collections.emptyList()));
+                .map(u -> new CustomUser(u, Collections.emptyList()));
         return Mono.justOrEmpty(user);
     }
 }

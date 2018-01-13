@@ -1,5 +1,6 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -16,15 +17,16 @@ public class ActiveMQConfig {
     public static final String ORDER_QUEUE = "order-queue";
 
     @Bean
-    public JmsListenerContainerFactory<?> queueListenerFactory() {
+    public JmsListenerContainerFactory<?> queueListenerFactory(MessageConverter messageConverter) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setMessageConverter(messageConverter());
+        factory.setMessageConverter(messageConverter);
         return factory;
     }
 
     @Bean
-    public MessageConverter messageConverter() {
+    public MessageConverter messageConverter(ObjectMapper objectMapper) {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setObjectMapper(objectMapper);
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         return converter;

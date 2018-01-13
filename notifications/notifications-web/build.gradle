@@ -31,7 +31,6 @@ ext {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-tomcat')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-activemq')

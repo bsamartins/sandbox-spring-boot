@@ -17,9 +17,7 @@ public class WebFluxTests {
 
     private static Mono<String> testConsumer(Mono<String> mono) {
         return mono.map(e -> "prefix_" + e)
-                .doOnNext(e -> System.out.println("doOnNext-First: " + e))
-                .switchIfEmpty(Mono.just("Hello World"))
-                .doOnNext(e -> System.out.println("doOnNext-Second: " + e));
+                .switchIfEmpty(Mono.just("Hello World"));
     }
 
 }

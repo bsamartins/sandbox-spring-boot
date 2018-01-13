@@ -1,13 +1,14 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
 import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationConverter;
-import com.github.bsamartins.springboot.notifications.security.UnauthorizedServerAuthenticationEntryPoint;
+import com.github.bsamartins.springboot.notifications.security.HttpStatusResponseAuthenticationEntryPoint;
 import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService;
 import com.github.bsamartins.springboot.notifications.security.NoPasswordReactiveAuthenticationManager;
 import com.github.bsamartins.springboot.notifications.security.ReactiveUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -77,7 +78,7 @@ public class WebFluxSecurityConfig {
 
     @Bean
     public ServerAuthenticationEntryPoint serverAuthenticationEntryPoint() {
-        return new UnauthorizedServerAuthenticationEntryPoint();
+        return new HttpStatusResponseAuthenticationEntryPoint(HttpStatus.UNAUTHORIZED);
     }
 
     @Bean

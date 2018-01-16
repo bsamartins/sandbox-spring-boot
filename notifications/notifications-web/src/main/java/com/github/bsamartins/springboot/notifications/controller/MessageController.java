@@ -3,7 +3,6 @@ package com.github.bsamartins.springboot.notifications.controller;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
 import com.github.bsamartins.springboot.notifications.security.CustomUser;
 import com.github.bsamartins.springboot.notifications.service.MessageService;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -16,8 +15,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static com.github.bsamartins.springboot.notifications.controller.SseHelper.sse;
+import static com.github.bsamartins.springboot.notifications.controller.helper.SseHelper.sse;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -25,9 +25,6 @@ public class MessageController {
 
     @Autowired
     private MessageService messageService;
-
-    @Autowired
-    private Publisher<org.springframework.messaging.Message<Message>> jmsReactiveSource;
 
     @RequestMapping(method = RequestMethod.POST)
     public Mono<Message> sendMessage(@RequestBody String input, @AuthenticationPrincipal CustomUser authUser) {
@@ -42,13 +39,13 @@ public class MessageController {
 
     @RequestMapping(value = "/stream", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Message>> streamMessages() {
-        return Flux.from(jmsReactiveSource)
-                .map(msg -> ServerSentEvent.builder(msg.getPayload()).build())
+        return messageService.stream()
+                .map(msg -> ServerSentEvent.builder(msg).build())
                 .mergeWith(sse());
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Mono<Iterable<Message>> getMessages() {
+    public Mono<List<Message>> getMessages() {
         return messageService.getMessages();
     }
 

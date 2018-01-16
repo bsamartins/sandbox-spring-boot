@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
-import java.util.Optional;
 
 public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsService {
 
@@ -16,8 +15,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        Optional<UserDetails> user =  Optional.ofNullable(userRepository.findByUsername(username))
+        return userRepository.findByUsername(username)
                 .map(u -> new CustomUser(u, Collections.emptyList()));
-        return Mono.justOrEmpty(user);
     }
 }

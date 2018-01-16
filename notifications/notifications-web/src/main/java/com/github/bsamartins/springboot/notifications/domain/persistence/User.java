@@ -1,18 +1,19 @@
 package com.github.bsamartins.springboot.notifications.domain.persistence;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.validation.constraints.NotNull;
 
-@Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name="username", columnNames = "username")})
+@Document
 public class User {
 
     @Id
-    @Column(updatable = false, nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     @NotNull
+    @Indexed(unique = true)
     private String username;
 
     @NotNull
@@ -34,11 +35,7 @@ public class User {
         this.password = password;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

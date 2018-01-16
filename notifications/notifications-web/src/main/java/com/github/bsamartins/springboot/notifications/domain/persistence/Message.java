@@ -1,31 +1,30 @@
 package com.github.bsamartins.springboot.notifications.domain.persistence;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.core.style.ToStringCreator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
+@Document
 public class Message implements Serializable {
 
     @Id
-    @Column(updatable = false, nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
+    @NotNull
     private String text;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Column(nullable = false)
+    @NotNull
     private LocalDateTime timestamp;
 
-    @Column(nullable = false)
-    private Long userId;
+    @NotNull
+    private String userId;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -45,16 +44,21 @@ public class Message implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
     @Override
     public String toString() {
-        return new ToStringCreator(this).toString();
+        return "Message{" +
+                "id='" + id + '\'' +
+                ", text='" + text + '\'' +
+                ", timestamp=" + timestamp +
+                ", userId='" + userId + '\'' +
+                '}';
     }
 }

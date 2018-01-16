@@ -1,10 +1,10 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
-import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationConverter;
 import com.github.bsamartins.springboot.notifications.security.HttpStatusResponseAuthenticationEntryPoint;
-import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService;
 import com.github.bsamartins.springboot.notifications.security.NoPasswordReactiveAuthenticationManager;
 import com.github.bsamartins.springboot.notifications.security.ReactiveUserDetailsServiceImpl;
+import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationConverter;
+import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -36,14 +36,14 @@ public class WebFluxSecurityConfig {
 
     @Primary
     @Bean
-    protected ReactiveAuthenticationManager authenticationManager() {
-        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(reactiveUserDetailsService());
+    protected ReactiveAuthenticationManager authenticationManager(ReactiveUserDetailsService reactiveUserDetailsService) {
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(reactiveUserDetailsService);
         authenticationManager.setPasswordEncoder(passwordEncoder());
         return authenticationManager;
     }
 
-    @Bean NoPasswordReactiveAuthenticationManager noPasswordAuthenticationManager() {
-        return new NoPasswordReactiveAuthenticationManager(reactiveUserDetailsService());
+    @Bean NoPasswordReactiveAuthenticationManager noPasswordAuthenticationManager(ReactiveUserDetailsService reactiveUserDetailsService) {
+        return new NoPasswordReactiveAuthenticationManager(reactiveUserDetailsService);
     }
 
     @Bean

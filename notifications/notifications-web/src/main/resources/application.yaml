@@ -43,6 +43,7 @@ logging:
       root: info
       com.github.bsamartins.springboot.notifications: debug
       org.springframework: info
+      org.springframework.beans: info
       org.springframework.security: info
       org.hibernate: off
       org.hibernate.SQL: off

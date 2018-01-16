@@ -1,4 +1,4 @@
-package com.github.bsamartins.springboot.notifications.controller;
+package com.github.bsamartins.springboot.notifications.controller.helper;
 
 import org.springframework.http.codec.ServerSentEvent;
 import reactor.core.publisher.Flux;

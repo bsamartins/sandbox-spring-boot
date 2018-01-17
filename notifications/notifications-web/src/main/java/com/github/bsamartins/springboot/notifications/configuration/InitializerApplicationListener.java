@@ -1,11 +1,10 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
-import com.github.bsamartins.springboot.notifications.persistence.UserRepository;
+import com.github.bsamartins.springboot.notifications.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -2,7 +2,7 @@ package com.github.bsamartins.springboot.notifications.service;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
 import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher;
-import com.github.bsamartins.springboot.notifications.persistence.MessageRepository;
+import com.github.bsamartins.springboot.notifications.repository.MessageRepository;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

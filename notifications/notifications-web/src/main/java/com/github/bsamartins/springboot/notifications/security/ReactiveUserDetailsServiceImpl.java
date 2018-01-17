@@ -1,6 +1,6 @@
 package com.github.bsamartins.springboot.notifications.security;
 
-import com.github.bsamartins.springboot.notifications.persistence.UserRepository;
+import com.github.bsamartins.springboot.notifications.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;

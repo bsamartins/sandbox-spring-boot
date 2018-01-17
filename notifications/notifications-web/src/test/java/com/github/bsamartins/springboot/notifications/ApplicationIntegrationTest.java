@@ -1,7 +1,7 @@
 package com.github.bsamartins.springboot.notifications;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
-import com.github.bsamartins.springboot.notifications.persistence.UserRepository;
+import com.github.bsamartins.springboot.notifications.repository.UserRepository;
 import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService;
 import org.junit.Before;
 import org.junit.jupiter.api.extension.ExtendWith;

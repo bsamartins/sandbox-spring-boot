@@ -4,8 +4,8 @@ import com.github.bsamartins.springboot.notifications.ApplicationIntegrationTest
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher;
-import com.github.bsamartins.springboot.notifications.persistence.MessageRepository;
-import com.github.bsamartins.springboot.notifications.persistence.UserRepository;
+import com.github.bsamartins.springboot.notifications.repository.MessageRepository;
+import com.github.bsamartins.springboot.notifications.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -25,3 +25,13 @@ nbdist/
 .nb-gradle/
 notifications/out
 notifications/notifications-web/out
+microservices/gateway/out
+microservices/config/out
+microservices/registry/out
+microservices/gateway/out
+microservices/test-service/out
+microservices/gateway/build
+microservices/config/build
+microservices/registry/build
+microservices/gateway/build
+microservices/test-service/build

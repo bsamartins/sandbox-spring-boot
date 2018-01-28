@@ -1,0 +1,11 @@
+dependencies {
+    compile 'org.springframework.security.oauth:spring-security-oauth2'
+}
+
+mainClassName = "pt.bsamartins.sandbox.springboot.microservices.authentication.AuthenticationApplication"
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}

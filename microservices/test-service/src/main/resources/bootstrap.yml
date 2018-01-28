@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: test-service
+  config:
+    retry:
+      initialInterval: 2000
+      multiplier: 1.2
+      maxAttempts: 10
+      maxInterval: 5000
+  cloud:
+    config:
+      uri: http://config:8888
+      fail-fast: true
+      #password: ${CONFIG_SERVICE_PASSWORD}
+      #username: user
+

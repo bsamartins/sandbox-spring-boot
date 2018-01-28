@@ -1,0 +1,12 @@
+dependencies {
+    compile "org.springframework.cloud:spring-cloud-starter-eureka"
+    compile "org.springframework.cloud:spring-cloud-netflix-eureka-server"
+}
+
+mainClassName = "pt.bsamartins.sandbox.springboot.microservices.registry.RegistryApplication"
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}

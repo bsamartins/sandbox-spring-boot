@@ -1,6 +1,7 @@
 dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-eureka"
     compile "org.springframework.cloud:spring-cloud-netflix-eureka-server"
+    compile "org.springframework.cloud:spring-cloud-config-client"
 }
 
 mainClassName = "pt.bsamartins.sandbox.springboot.microservices.registry.RegistryApplication"

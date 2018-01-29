@@ -18,6 +18,8 @@ services:
     image: bsamartins-docker-registry.bintray.io/cloud-microservices/registry
     expose:
       - '8761'
+    ports:
+      - 8761:8761
     links:
       - config
 

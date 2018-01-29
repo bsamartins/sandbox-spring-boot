@@ -7,6 +7,12 @@ services:
     expose:
       - '8888'
 
+  authentication:
+    build: ./authentication/
+    image: bsamartins-docker-registry.bintray.io/cloud-microservices/authentication
+    expose:
+      - '8888'
+
   registry:
     build: ./registry/
     image: bsamartins-docker-registry.bintray.io/cloud-microservices/registry

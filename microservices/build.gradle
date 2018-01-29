@@ -10,10 +10,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.avast.gradle.docker-compose" version "0.6.12"
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'application'
@@ -30,23 +26,20 @@ subprojects {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:Dalston.SR5"
             mavenBom 'org.springframework.cloud:spring-cloud-config:1.4.1.RELEASE'
+            mavenBom 'org.springframework.cloud:spring-cloud-netflix:1.4.2.RELEASE'
         }
     }
 
     dependencies {
         compile "org.springframework.boot:spring-boot-starter-web"
+        compile 'org.springframework.boot:spring-boot-starter-actuator'
         compile 'org.slf4j:slf4j-api:1.7.18'
 
         testCompile 'junit:junit:4.12'
     }
 }
 
-subprojects.each {
-    composeUp.mustRunAfter "${it.name}:build"
-}
-
-
-task start {
+task composeBuild(type:Exec) {
     subprojects.each { dependsOn("${it.name}:build") }
-    dependsOn('composeUp')
+    commandLine 'docker-compose', 'build'
 }

@@ -1,37 +1,40 @@
 package com.github.bsamartins.springboot.notifications.domain.persistence;
 
-import com.github.bsamartins.springboot.notifications.domain.GroupCreate;
+import com.github.bsamartins.springboot.notifications.domain.File;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
 
 @Document
-public class Group {
+public class ChatMembership {
 
     @Id
     private String id;
 
     @NotNull
-    @Indexed(unique = true)
-    @TextIndexed
-    private String name;
+    private String userId;
 
-    private String pictureId;
+    @NotNull
+    private String groupId;
 
-    public Group() {
+    @NotNull
+    private OffsetDateTime date;
+
+    public ChatMembership() {
     }
 
-    public Group(Group other) {
+    public ChatMembership(ChatMembership other) {
         this.id = other.id;
         this.name = other.name;
         this.pictureId = other.pictureId;
     }
 
-    public Group(GroupCreate other) {
-        this.name = other.getName();
+    public ChatMembership(GroupCreate other) {
+        this.name = other.name;
     }
 
     public String getId() {
@@ -56,6 +59,27 @@ public class Group {
 
     public String getPictureUri() {
         return String.format("http://localhost/api/files/%s", this.pictureId);
+    }
+
+    public static class GroupCreate {
+        private String name;
+        private File picture;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public File getPicture() {
+            return picture;
+        }
+
+        public void setPicture(File picture) {
+            this.picture = picture;
+        }
     }
 
 }

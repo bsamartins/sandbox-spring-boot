@@ -2,6 +2,7 @@ package com.github.bsamartins.springboot.notifications.controller;
 
 import com.github.bsamartins.springboot.notifications.ApplicationIntegrationTest;
 import com.github.bsamartins.springboot.notifications.domain.File;
+import com.github.bsamartins.springboot.notifications.domain.GroupCreate;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Group;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ public class GroupControllerTest extends ApplicationIntegrationTest {
         file.setName("image.txt");
         file.setMediaType(MediaType.valueOf("plain/text"));
 
-        Group.GroupCreate groupCreate = new Group.GroupCreate();
+        GroupCreate groupCreate = new GroupCreate();
         groupCreate.setName("test group");
         groupCreate.setPicture(file);
 

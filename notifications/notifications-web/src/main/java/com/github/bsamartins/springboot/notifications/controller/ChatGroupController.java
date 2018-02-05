@@ -1,5 +1,6 @@
 package com.github.bsamartins.springboot.notifications.controller;
 
+import com.github.bsamartins.springboot.notifications.domain.GroupCreate;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Group;
 import com.github.bsamartins.springboot.notifications.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/groups")
-public class GroupController {
+public class ChatGroupController {
 
     @Autowired
     private GroupService groupService;
@@ -30,7 +31,15 @@ public class GroupController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Group> create(@RequestBody Group.GroupCreate group) {
+    public Mono<Group> create(@RequestBody GroupCreate group) {
+        return groupService.create(new Group(group), group.getPicture())
+                .cast(Group.class)
+                .switchIfEmpty(Mono.error(new Exception("what?")))
+                .log();
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Group> postMembership(@RequestBody GroupCreate group) {
         return groupService.create(new Group(group), group.getPicture())
                 .cast(Group.class)
                 .switchIfEmpty(Mono.error(new Exception("what?")))

@@ -8,6 +8,7 @@ import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthentica
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
@@ -53,7 +54,7 @@ public class WebFluxSecurityConfig {
                 // Best practice to use both for defense in depth
                 .addFilterAt(jwtAuthenticationWebFilter, AUTHENTICATION)
                 .csrf().disable().authorizeExchange()
-                .pathMatchers("/api/files/**").permitAll()
+                .pathMatchers(HttpMethod.GET, "/api/files/*").permitAll()
                 .pathMatchers("/api/**").authenticated()
                 .pathMatchers("/**").permitAll()
                 .and()

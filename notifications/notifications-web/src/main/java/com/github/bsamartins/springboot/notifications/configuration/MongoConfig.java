@@ -7,10 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.mapping.event.LoggingEventListener;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.util.SocketUtils;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import pt.bsamartins.spring.data.mongo.gridfs.ReactiveGridFsTemplate;
 
 @Configuration
 public class MongoConfig extends AbstractReactiveMongoConfiguration {
@@ -50,5 +52,14 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
     @Bean
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
+    }
+
+    @Bean
+    public ReactiveMongoTemplate reactiveMongoTemplate() throws Exception {
+        return new ReactiveMongoTemplate(reactiveMongoDbFactory(), mappingMongoConverter());
+    }
+
+    @Bean public ReactiveGridFsTemplate reactiveGridFsTemplate() throws Exception {
+        return new ReactiveGridFsTemplate(reactiveMongoDbFactory(), mappingMongoConverter());
     }
 }

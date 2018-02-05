@@ -6,13 +6,15 @@ import {BaseComponent} from "./base.component";
   selector: 'navbar',
   styleUrls: ['./navbar.component.scss'],
   template: `
-    <div class="ui fixed inverted menu">
-      <div class="ui container">
+    <div class="ui inverted menu">
+      <div class="ui fluid container">
         <a href="#" class="header item">
           <img class="logo" src="">
           Project Name
         </a>
-        <a href="#" class="item">Home</a>
+        <a routerLink="/" class="item">Home</a>
+        <a routerLink="/chat" class="item">Chat</a>
+
         <div class="right menu">
           <div class="item">
             <login *ngIf="!isLoggedIn()"></login>

@@ -32,7 +32,7 @@ public class RedisConfig {
     public static final String MESSAGE_QUEUE = "message-queue";
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Bean
     RedisMessageListenerContainer redisContainer() {
@@ -42,8 +42,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisMessagePublisher<com.github.bsamartins.springboot.notifications.domain.persistence.Message> redisMessagePublisher() {
-        return new RedisMessagePublisher<>(jsonObjectRedisTemplate(), topic());
+    public RedisMessagePublisher<com.github.bsamartins.springboot.notifications.domain.persistence.Message> redisMessagePublisher(RedisTemplate<String, Object> jsonObjectRedisTemplate) {
+        return new RedisMessagePublisher<>(jsonObjectRedisTemplate, topic());
     }
 
     @Bean
@@ -69,10 +69,10 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> jsonObjectRedisTemplate() {
+    public RedisTemplate<String, Object> jsonObjectRedisTemplate(RedisSerializer<Object> redisSerializer) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
-        template.setValueSerializer(redisSerializer());
+        template.setValueSerializer(redisSerializer);
 
         return template;
     }
@@ -102,11 +102,10 @@ public class RedisConfig {
         });
     }
 
-    @Bean
-    public <T> Function<org.springframework.data.redis.connection.Message, Message<T>> messageSerializerMapper() {
+    private <T> Function<org.springframework.data.redis.connection.Message, Message<T>> messageSerializerMapper() {
         return message -> {
             @SuppressWarnings("unchecked")
-            T data = (T)this.redisSerializer().deserialize(message.getBody());
+            T data = (T)redisSerializer().deserialize(message.getBody());
 
             Message<T> result = new Message<>(data);
             result.getHeaders().put("channel", new String(message.getChannel()));

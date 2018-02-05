@@ -14,3 +14,21 @@ export interface User {
   id: number;
   username: string;
 }
+
+export class Group {
+  id: string;
+  name: string;
+  pictureId: string;
+  pictureUri: string;
+}
+
+export class GroupCreate {
+  name: string;
+  picture: File;
+}
+
+export class File {
+  name: string;
+  content: string;
+  mediaType: string;
+}

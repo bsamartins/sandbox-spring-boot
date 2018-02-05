@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
-import {AuthenticationService} from "./services/authentication.service";
-import {BaseComponent} from "./base.component";
-import {MessageService} from "./services/message.service";
+import {AuthenticationService} from "../services/authentication.service";
+import {BaseComponent} from "../base.component";
+import {MessageService} from "../services/message.service";
 import {Subscription} from "rxjs/Subscription";
 import {Observable} from "rxjs/Observable";
-import {UserService} from "./services/user.service";
-import {Message, User} from "./services/types";
+import {UserService} from "../services/user.service";
+import {Message, User} from "../services/types";
 import {animate, keyframes, query, stagger, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
@@ -96,7 +96,7 @@ export class MessagesViewComponent extends BaseComponent implements OnInit, OnDe
       });
 
     });
-    this.start();
+    // this.start();
   }
 
   ngOnDestroy(): void {

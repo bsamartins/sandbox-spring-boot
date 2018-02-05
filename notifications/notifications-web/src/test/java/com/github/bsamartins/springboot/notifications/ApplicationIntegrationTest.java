@@ -1,5 +1,6 @@
 package com.github.bsamartins.springboot.notifications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.UserRepository;
 import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService;
@@ -10,7 +11,9 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfigurat
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +40,14 @@ public abstract class ApplicationIntegrationTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Configuration
+    public static class TestConfig {
+        @Bean
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
+        }
+    }
 
     @Before
     final public void init() {}

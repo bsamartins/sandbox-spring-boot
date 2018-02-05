@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,7 +23,7 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public Mono<Message> sendMessage(@RequestBody String input, @AuthenticationPrincipal CustomUser authUser) {
         return Mono.just(input).map(text -> {
             Message message = new Message();
@@ -37,14 +34,14 @@ public class MessageController {
         }).flatMap(messageService::save);
     }
 
-    @RequestMapping(value = "/stream", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Message>> streamMessages() {
         return messageService.stream()
                 .map(msg -> ServerSentEvent.builder(msg).build())
                 .mergeWith(sse());
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public Mono<List<Message>> getMessages() {
         return messageService.getMessages();
     }

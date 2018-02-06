@@ -56,6 +56,7 @@ dependencies {
         exclude group: 'junit'
     }
     testCompile('io.projectreactor:reactor-test')
+    testCompile('org.easymock:easymock:3.5.1')
     testCompile('org.junit.jupiter:junit-jupiter-api:5.0.3')
     testRuntime('org.junit.jupiter:junit-jupiter-engine:5.0.3')
 }

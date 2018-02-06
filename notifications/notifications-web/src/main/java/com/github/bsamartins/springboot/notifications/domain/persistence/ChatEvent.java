@@ -1,16 +1,17 @@
 package com.github.bsamartins.springboot.notifications.domain.persistence;
 
-import com.github.bsamartins.springboot.notifications.domain.File;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.index.TextIndexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
-@Document
-public class ChatMembership {
+public class ChatEvent {
+
+    public enum Type {
+        USER_LEFT,
+        USER_JOINED
+    }
 
     @Id
     private String id;
@@ -19,67 +20,41 @@ public class ChatMembership {
     private String userId;
 
     @NotNull
-    private String groupId;
+    private OffsetDateTime timestamp;
 
     @NotNull
-    private OffsetDateTime date;
-
-    public ChatMembership() {
-    }
-
-    public ChatMembership(ChatMembership other) {
-        this.id = other.id;
-        this.name = other.name;
-        this.pictureId = other.pictureId;
-    }
-
-    public ChatMembership(GroupCreate other) {
-        this.name = other.name;
-    }
+    private Type type;
 
     public String getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getPictureId() {
-        return pictureId;
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setPictureId(String pictureId) {
-        this.pictureId = pictureId;
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public String getPictureUri() {
-        return String.format("http://localhost/api/files/%s", this.pictureId);
+    public Type getType() {
+        return type;
     }
 
-    public static class GroupCreate {
-        private String name;
-        private File picture;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public File getPicture() {
-            return picture;
-        }
-
-        public void setPicture(File picture) {
-            this.picture = picture;
-        }
+    public void setType(Type type) {
+        this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

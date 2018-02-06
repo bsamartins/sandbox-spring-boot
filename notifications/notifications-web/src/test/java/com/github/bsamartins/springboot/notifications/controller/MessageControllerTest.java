@@ -1,6 +1,6 @@
 package com.github.bsamartins.springboot.notifications.controller;
 
-import com.github.bsamartins.springboot.notifications.ApplicationIntegrationTest;
+import com.github.bsamartins.springboot.notifications.test.ApplicationIntegrationTest;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher;

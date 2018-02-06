@@ -1,6 +1,6 @@
 package com.github.bsamartins.springboot.notifications.domain;
 
-public class GroupCreate {
+public class ChatCreate {
         private String name;
         private com.github.bsamartins.springboot.notifications.domain.File picture;
 

@@ -1,4 +1,4 @@
-package com.github.bsamartins.springboot.notifications;
+package com.github.bsamartins.springboot.notifications.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;

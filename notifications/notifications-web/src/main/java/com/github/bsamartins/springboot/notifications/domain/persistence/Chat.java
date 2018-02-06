@@ -1,6 +1,6 @@
 package com.github.bsamartins.springboot.notifications.domain.persistence;
 
-import com.github.bsamartins.springboot.notifications.domain.GroupCreate;
+import com.github.bsamartins.springboot.notifications.domain.ChatCreate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.TextIndexed;
@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
-@Document
-public class Group {
+@Document(collection = "chats")
+public class Chat {
 
     @Id
     private String id;
@@ -21,16 +21,16 @@ public class Group {
 
     private String pictureId;
 
-    public Group() {
+    public Chat() {
     }
 
-    public Group(Group other) {
+    public Chat(Chat other) {
         this.id = other.id;
         this.name = other.name;
         this.pictureId = other.pictureId;
     }
 
-    public Group(GroupCreate other) {
+    public Chat(ChatCreate other) {
         this.name = other.getName();
     }
 

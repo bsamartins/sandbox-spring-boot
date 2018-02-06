@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Document
+@Document(collection = "messages")
 public class Message implements Serializable {
 
     @Id

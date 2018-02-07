@@ -1,35 +1,39 @@
 package com.github.bsamartins.springboot.notifications.controller;
 
-import com.github.bsamartins.springboot.notifications.test.ApplicationIntegrationTest;
-import com.github.bsamartins.springboot.notifications.domain.File;
 import com.github.bsamartins.springboot.notifications.domain.ChatCreate;
+import com.github.bsamartins.springboot.notifications.domain.File;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
-import org.junit.jupiter.api.AfterEach;
+import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
+import com.github.bsamartins.springboot.notifications.domain.persistence.User;
+import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
+import com.github.bsamartins.springboot.notifications.test.ApplicationIntegrationTest;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
+
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.web.reactive.function.BodyInserters.empty;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
-public class ChatControllerTest extends ApplicationIntegrationTest {
+class ChatControllerTest extends ApplicationIntegrationTest {
 
     @Autowired
     private WebTestClient webClient;
 
     @Autowired
-    private ReactiveMongoTemplate reactiveMongoTemplate;
+    private ChatRepository chatRepository;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
     }
 
     @Test
-    public void create() {
+    void create() {
         File file = new File();
         file.setContent("Hello World".getBytes());
         file.setName("image.txt");
@@ -41,9 +45,7 @@ public class ChatControllerTest extends ApplicationIntegrationTest {
 
         Chat result = webClient.post().uri("/api/chats")
                 .body(fromObject(chatCreate))
-                .headers(headers -> {
-                    headers.setContentType(MediaType.APPLICATION_JSON);
-                })
+                .headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
                 .headers(withUser())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -54,9 +56,111 @@ public class ChatControllerTest extends ApplicationIntegrationTest {
         assertNotNull(result);
     }
 
-    @AfterEach
-    public void tearDown() {
-        Mono.from(this.reactiveMongoTemplate.getMongoDatabase().drop())
-                .subscribe();
+    @Test
+    void chatJoin() {
+        Chat chat = createChat();
+
+        webClient.post().uri("/api/chats/{id}/memberships", chat.getId())
+                .body(empty())
+                .headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isCreated();
+    }
+
+    @NotNull
+    private Chat createChat() {
+        Chat chat = new Chat();
+        chat.setName("test");
+        chat.setPictureId("");
+
+        chatRepository.save(chat).block();
+        return chat;
+    }
+
+    @Test
+    void chatJoin_alreadyInChat() {
+        User user = getDefaultUser();
+
+        Chat chat = createChat();
+
+        ChatEvent chatEvent = new ChatEvent();
+        chatEvent.setUserId(user.getId());
+        chatEvent.setTimestamp(OffsetDateTime.now());
+        chatEvent.setType(ChatEvent.Type.USER_JOINED);
+
+        chatRepository.addEvent(chat.getId(), chatEvent).block();
+
+        webClient.post().uri("/api/chats/{id}/memberships", chat.getId())
+                .body(empty())
+                .headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
+                .headers(withUser(user))
+                .exchange()
+                .expectStatus().isNotModified();
+    }
+
+    @Test
+    void chatJoin_chatNotFound() {
+        webClient.post().uri("/api/chats/{id}/memberships", "123")
+                .body(empty())
+                .headers(headers -> headers.setContentType(MediaType.APPLICATION_JSON))
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void chatLeave() {
+        User user = getDefaultUser();
+
+        Chat chat = createChat();
+
+        ChatEvent chatEvent = new ChatEvent();
+        chatEvent.setUserId(user.getId());
+        chatEvent.setTimestamp(OffsetDateTime.now());
+        chatEvent.setType(ChatEvent.Type.USER_JOINED);
+
+        chatRepository.addEvent(chat.getId(), chatEvent).block();
+
+        webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
+                .headers(withUser(user))
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void chatLeave_alreadyLeftChat() {
+        User user = getDefaultUser();
+
+        Chat chat = createChat();
+
+        ChatEvent chatEvent = new ChatEvent();
+        chatEvent.setUserId(user.getId());
+        chatEvent.setTimestamp(OffsetDateTime.now());
+        chatEvent.setType(ChatEvent.Type.USER_LEFT);
+
+        chatRepository.addEvent(chat.getId(), chatEvent).block();
+
+        webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
+                .headers(withUser(user))
+                .exchange()
+                .expectStatus().isNotModified();
+    }
+
+    @Test
+    void chatLeave_neverJoinedChat() {
+        Chat chat = createChat();
+        webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isNotModified();
+    }
+
+    @Test
+    void chatLeave_notFound() {
+        webClient.delete().uri("/api/chats/{id}/memberships", "123")
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

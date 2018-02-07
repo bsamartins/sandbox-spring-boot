@@ -62,22 +62,24 @@ public class ChatService {
                     if(e.getType().equals(ChatEvent.Type.USER_JOINED)) {
                         return Mono.error(new IllegalStateException("User already in group"));
                     }
-                    return Mono.empty();
+                    return Mono.<Void>empty();
                 })
-                .switchIfEmpty(createMembershipEvent(chat, user, ChatEvent.Type.USER_JOINED))
-                .then();
+                .switchIfEmpty(createMembershipEvent(chat, user, ChatEvent.Type.USER_JOINED));
     }
 
     public Mono<Void> leave(Chat chat, User user) {
         return this.chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())
+                .switchIfEmpty(Mono.error(userNotInGroupError()))
                 .flatMap(e -> {
                     if(e.getType().equals(ChatEvent.Type.USER_LEFT)) {
-                        return Mono.error(new IllegalStateException("User not in group"));
+                        return Mono.error(userNotInGroupError());
                     }
-                    return Mono.empty();
-                })
-                .switchIfEmpty(createMembershipEvent(chat, user, ChatEvent.Type.USER_LEFT))
-                .then();
+                    return createMembershipEvent(chat, user, ChatEvent.Type.USER_LEFT);
+                });
+    }
+
+    private static Exception userNotInGroupError() {
+        return new IllegalStateException("User not in group");
     }
 
     private Mono<Void> createMembershipEvent(Chat chat, User user, ChatEvent.Type type) {

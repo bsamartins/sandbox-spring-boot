@@ -2,10 +2,13 @@ package com.github.bsamartins.springboot.notifications.controller;
 
 import com.github.bsamartins.springboot.notifications.domain.ChatCreate;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
+import com.github.bsamartins.springboot.notifications.security.CustomUser;
 import com.github.bsamartins.springboot.notifications.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -34,16 +37,28 @@ public class ChatController {
     public Mono<Chat> create(@RequestBody ChatCreate chat) {
         return chatService.create(new Chat(chat), chat.getPicture())
                 .cast(Chat.class)
-                .switchIfEmpty(Mono.error(new Exception("what?")))
-                .log();
+                .switchIfEmpty(Mono.error(new Exception("what?")));
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Chat> postMembership(@RequestBody ChatCreate chat) {
-        return chatService.create(new Chat(chat), chat.getPicture())
-                .cast(Chat.class)
-                .switchIfEmpty(Mono.error(new Exception("what?")))
-                .log();
+    @PostMapping(value = "/{id}/memberships")
+    public Mono<ResponseEntity> joinChat(@PathVariable("id") String chatId,
+                                     @AuthenticationPrincipal CustomUser authUser) {
+        return chatService.findById(chatId)
+                .flatMap(chat -> chatService.join(chat, authUser.getUser())
+                        .cast(ResponseEntity.class)
+                        .onErrorReturn(IllegalStateException.class, ResponseEntity.status(HttpStatus.NOT_MODIFIED).build())
+                        .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build())))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
+    @DeleteMapping(value = "/{id}/memberships")
+    public Mono<ResponseEntity> leaveChat(@PathVariable("id") String chatId,
+                                         @AuthenticationPrincipal CustomUser authUser) {
+        return chatService.findById(chatId)
+                .flatMap(chat -> chatService.leave(chat, authUser.getUser())
+                        .cast(ResponseEntity.class)
+                        .onErrorReturn(IllegalStateException.class, ResponseEntity.status(HttpStatus.NOT_MODIFIED).build())
+                        .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.OK).build())))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
 }

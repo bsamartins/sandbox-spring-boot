@@ -16,7 +16,7 @@ import static org.easymock.EasyMock.*;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ChatServiceTest {
+class ChatServiceTest {
 
     @TestSubject
     private ChatService chatService;
@@ -25,14 +25,14 @@ public class ChatServiceTest {
     private ChatRepository chatRepository;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         chatService = new ChatService();
 
         EasyMockSupport.injectMocks(this);
     }
 
     @Test
-    public void join() {
+    void join() {
         Chat chat = new Chat();
         User user = new User();
 
@@ -57,7 +57,7 @@ public class ChatServiceTest {
     }
 
     @Test
-    public void join_lastEventJoined() {
+    void join_lastEventJoined() {
         Chat chat = new Chat();
         User user = new User();
 
@@ -84,7 +84,7 @@ public class ChatServiceTest {
     }
 
     @Test
-    public void join_lastEventLeft() {
+    void join_lastEventLeft() {
         Chat chat = new Chat();
         User user = new User();
 
@@ -111,32 +111,22 @@ public class ChatServiceTest {
     }
 
     @Test
-    public void leave() {
+    void leave_notJoined() {
         Chat chat = new Chat();
         User user = new User();
 
-        Capture<ChatEvent> chatEventCaptor = newCapture();
-
         expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.empty());
-        expect(chatRepository.addEvent(eq(chat.getId()), capture(chatEventCaptor))).andReturn(Mono.empty());
 
         replay(chatRepository);
 
         StepVerifier.create(chatService.leave(chat, user))
-                .verifyComplete();
+                .verifyError(IllegalStateException.class);
 
         verify(chatRepository);
-
-        ChatEvent event = chatEventCaptor.getValue();
-        assertNotNull(event);
-
-        assertEquals(user.getId(), event.getId());
-        assertNotNull(event.getTimestamp());
-        assertEquals(ChatEvent.Type.USER_LEFT, event.getType());
     }
 
     @Test
-    public void leave_lastEventLeft() {
+    void leave_lastEventLeft() {
         Chat chat = new Chat();
         User user = new User();
 
@@ -148,7 +138,6 @@ public class ChatServiceTest {
         Mono<Void> addEventResponse = Mono.empty();
 
         expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.just(lastEvent));
-        expect(chatRepository.addEvent(eq(chat.getId()), anyObject(ChatEvent.class))).andReturn(addEventResponse);
 
         replay(chatRepository);
 
@@ -163,7 +152,7 @@ public class ChatServiceTest {
     }
 
     @Test
-    public void leave_lastEventJoined() {
+    void leave_lastEventJoined() {
         Chat chat = new Chat();
         User user = new User();
 

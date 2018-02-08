@@ -33,6 +33,11 @@ public class ChatController {
         return chatService.findAll().collectList();
     }
 
+    @GetMapping(params = "query")
+    public Mono<List<Chat>> findByQuery(@RequestParam("query") String query) {
+        return chatService.findAll(query).collectList();
+    }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<Chat> create(@RequestBody ChatCreate chat) {
         return chatService.create(new Chat(chat), chat.getPicture())

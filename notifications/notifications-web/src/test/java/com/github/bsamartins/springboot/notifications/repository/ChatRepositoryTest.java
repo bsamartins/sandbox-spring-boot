@@ -173,6 +173,23 @@ class ChatRepositoryTest extends MongoIntegrationTest {
                 .verifyComplete();
     }
 
+    @Test
+    void findByNameContaining() {
+        createAndSaveChat("super dupa chat");
+        createAndSaveChat("regular chat");
+        StepVerifier.create(chatRepository.findByNameContaining("chat"))
+                .expectNextCount(2)
+                .verifyComplete();
+
+        StepVerifier.create(chatRepository.findByNameContaining("sup   cha"))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier.create(chatRepository.findByNameContaining("ChAt"))
+                .expectNextCount(2)
+                .verifyComplete();
+    }
+
     private User createAndSaveUser(String username) {
         User user = new User();
         user.setUsername(username);

@@ -79,4 +79,8 @@ public class ChatService {
     private static Exception userNotInGroupError() {
         return new IllegalStateException("User not in group");
     }
+
+    public Flux<Chat> findAll(String query) {
+        return this.chatRepository.findByNameContaining(query);
+    }
 }

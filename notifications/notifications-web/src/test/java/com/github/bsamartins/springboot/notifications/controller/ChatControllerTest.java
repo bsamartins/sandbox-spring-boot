@@ -54,7 +54,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
 
     @Test
     void chatJoin() {
-        Chat chat = createChat();
+        Chat chat = createAndSaveChat("test");
 
         webClient.post().uri("/api/chats/{id}/memberships", chat.getId())
                 .body(empty())
@@ -64,9 +64,9 @@ class ChatControllerTest extends ApplicationIntegrationTest {
                 .expectStatus().isCreated();
     }
 
-    private Chat createChat() {
+    private Chat createAndSaveChat(String name) {
         Chat chat = new Chat();
-        chat.setName("test");
+        chat.setName(name);
         chat.setPictureId("");
 
         return chatRepository.save(chat).block();
@@ -75,7 +75,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
     @Test
     void chatJoin_alreadyInChat() {
         User user = getDefaultUser();
-        Chat chat = createChat();
+        Chat chat = createAndSaveChat("test");
 
         chatRepository.addUser(chat.getId(), user.getId()).block();
 
@@ -100,7 +100,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
     @Test
     void chatLeave() {
         User user = getDefaultUser();
-        Chat chat = createChat();
+        Chat chat = createAndSaveChat("test");
 
         chatRepository.addUser(chat.getId(), user.getId()).block();
 
@@ -113,7 +113,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
     @Test
     void chatLeave_alreadyLeftChat() {
         User user = getDefaultUser();
-        Chat chat = createChat();
+        Chat chat = createAndSaveChat("test");
 
         chatRepository.addUser(chat.getId(), user.getId()).block();
         chatRepository.removeUser(chat.getId(), user.getId()).block();
@@ -126,7 +126,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
 
     @Test
     void chatLeave_neverJoinedChat() {
-        Chat chat = createChat();
+        Chat chat = createAndSaveChat("test");
         webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
                 .headers(withUser())
                 .exchange()
@@ -139,5 +139,30 @@ class ChatControllerTest extends ApplicationIntegrationTest {
                 .headers(withUser())
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void findByQuery() {
+        createAndSaveChat("super dupa chat");
+        createAndSaveChat("regular chat");
+        createAndSaveChat("123");
+
+        webClient.get().uri("/api/chats?query={query}", "chat")
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Chat.class).hasSize(2);
+
+        webClient.get().uri("/api/chats?query={query}", "sup   cha")
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Chat.class).hasSize(1);;
+
+        webClient.get().uri("/api/chats?query={query}", "ChAt")
+                .headers(withUser())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Chat.class).hasSize(2);;
     }
 }

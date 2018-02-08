@@ -1,20 +1,18 @@
 package com.github.bsamartins.springboot.notifications.service;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
-import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
-import org.easymock.*;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.MockType;
+import org.easymock.TestSubject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.OffsetDateTime;
-
 import static org.easymock.EasyMock.*;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ChatServiceTest {
 
@@ -36,10 +34,8 @@ class ChatServiceTest {
         Chat chat = new Chat();
         User user = new User();
 
-        Capture<ChatEvent> chatEventCaptor = newCapture();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.empty());
-        expect(chatRepository.addEvent(eq(chat.getId()), capture(chatEventCaptor))).andReturn(Mono.empty());
+        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(false));
+        expect(chatRepository.addUser(chat.getId(), user.getId())).andReturn(Mono.empty());
 
         replay(chatRepository);
 
@@ -47,75 +43,29 @@ class ChatServiceTest {
                 .verifyComplete();
 
         verify(chatRepository);
-
-        ChatEvent event = chatEventCaptor.getValue();
-        assertNotNull(event);
-
-        assertEquals(user.getId(), event.getId());
-        assertNotNull(event.getTimestamp());
-        assertEquals(ChatEvent.Type.USER_JOINED, event.getType());
     }
 
     @Test
-    void join_lastEventJoined() {
+    void join_alreadyInChat() {
         Chat chat = new Chat();
         User user = new User();
 
-        ChatEvent lastEvent = new ChatEvent();
-        lastEvent.setType(ChatEvent.Type.USER_JOINED);
-        lastEvent.setUserId(user.getId());
-        lastEvent.setTimestamp(OffsetDateTime.now());
-
-        Mono<Void> addEventResponse = Mono.empty();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.just(lastEvent));
-        expect(chatRepository.addEvent(eq(chat.getId()), anyObject(ChatEvent.class))).andReturn(addEventResponse);
+        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(true));
 
         replay(chatRepository);
 
         StepVerifier.create(chatService.join(chat, user))
                 .verifyError(IllegalStateException.class);
 
-        StepVerifier.create(addEventResponse)
-                .expectNextCount(0)
-                .verifyComplete();
-
         verify(chatRepository);
     }
 
     @Test
-    void join_lastEventLeft() {
+    void leave_notInChat() {
         Chat chat = new Chat();
         User user = new User();
 
-        ChatEvent lastEvent = new ChatEvent();
-        lastEvent.setType(ChatEvent.Type.USER_LEFT);
-        lastEvent.setUserId(user.getId());
-        lastEvent.setTimestamp(OffsetDateTime.now());
-
-        Mono<Void> addEventResponse = Mono.empty();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.just(lastEvent));
-        expect(chatRepository.addEvent(eq(chat.getId()), anyObject(ChatEvent.class))).andReturn(addEventResponse);
-
-        replay(chatRepository);
-
-        StepVerifier.create(chatService.join(chat, user))
-                .verifyComplete();
-
-        StepVerifier.create(addEventResponse)
-                .expectSubscription()
-                .verifyComplete();
-
-        verify(chatRepository);
-    }
-
-    @Test
-    void leave_notJoined() {
-        Chat chat = new Chat();
-        User user = new User();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.empty());
+        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(false));
 
         replay(chatRepository);
 
@@ -126,53 +76,16 @@ class ChatServiceTest {
     }
 
     @Test
-    void leave_lastEventLeft() {
+    void leave() {
         Chat chat = new Chat();
         User user = new User();
 
-        ChatEvent lastEvent = new ChatEvent();
-        lastEvent.setType(ChatEvent.Type.USER_LEFT);
-        lastEvent.setUserId(user.getId());
-        lastEvent.setTimestamp(OffsetDateTime.now());
-
-        Mono<Void> addEventResponse = Mono.empty();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.just(lastEvent));
+        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(true));
+        expect(chatRepository.removeUser(chat.getId(), user.getId())).andReturn(Mono.empty());
 
         replay(chatRepository);
 
         StepVerifier.create(chatService.leave(chat, user))
-                .verifyError(IllegalStateException.class);
-
-        StepVerifier.create(addEventResponse)
-                .expectNextCount(0)
-                .verifyComplete();
-
-        verify(chatRepository);
-    }
-
-    @Test
-    void leave_lastEventJoined() {
-        Chat chat = new Chat();
-        User user = new User();
-
-        ChatEvent lastEvent = new ChatEvent();
-        lastEvent.setType(ChatEvent.Type.USER_JOINED);
-        lastEvent.setUserId(user.getId());
-        lastEvent.setTimestamp(OffsetDateTime.now());
-
-        Mono<Void> addEventResponse = Mono.empty();
-
-        expect(chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())).andReturn(Mono.just(lastEvent));
-        expect(chatRepository.addEvent(eq(chat.getId()), anyObject(ChatEvent.class))).andReturn(addEventResponse);
-
-        replay(chatRepository);
-
-        StepVerifier.create(chatService.leave(chat, user))
-                .verifyComplete();
-
-        StepVerifier.create(addEventResponse)
-                .expectSubscription()
                 .verifyComplete();
 
         verify(chatRepository);

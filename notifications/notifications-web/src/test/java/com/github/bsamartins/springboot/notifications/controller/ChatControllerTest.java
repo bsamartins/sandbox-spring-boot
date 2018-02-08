@@ -89,7 +89,8 @@ class ChatControllerTest extends ApplicationIntegrationTest {
         chatEvent.setTimestamp(OffsetDateTime.now());
         chatEvent.setType(ChatEvent.Type.USER_JOINED);
 
-        chatRepository.addEvent(chat.getId(), chatEvent).block();
+        chatRepository.addUser(chat.getId(), user.getId()).block();
+        chatRepository.addUser(chat.getId(), user.getId()).block();
 
         webClient.post().uri("/api/chats/{id}/memberships", chat.getId())
                 .body(empty())
@@ -120,7 +121,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
         chatEvent.setTimestamp(OffsetDateTime.now());
         chatEvent.setType(ChatEvent.Type.USER_JOINED);
 
-        chatRepository.addEvent(chat.getId(), chatEvent).block();
+        chatRepository.addUser(chat.getId(), user.getId()).block();
 
         webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
                 .headers(withUser(user))
@@ -139,7 +140,8 @@ class ChatControllerTest extends ApplicationIntegrationTest {
         chatEvent.setTimestamp(OffsetDateTime.now());
         chatEvent.setType(ChatEvent.Type.USER_LEFT);
 
-        chatRepository.addEvent(chat.getId(), chatEvent).block();
+        chatRepository.addUser(chat.getId(), user.getId()).block();
+        chatRepository.removeUser(chat.getId(), user.getId()).block();
 
         webClient.delete().uri("/api/chats/{id}/memberships", chat.getId())
                 .headers(withUser(user))

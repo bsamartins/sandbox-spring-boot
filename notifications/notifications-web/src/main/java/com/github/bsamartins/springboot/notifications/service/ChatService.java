@@ -2,7 +2,6 @@ package com.github.bsamartins.springboot.notifications.service;
 
 import com.github.bsamartins.springboot.notifications.domain.File;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
-import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
-import java.time.OffsetDateTime;
 
 import static com.github.bsamartins.springboot.notifications.InputStreamUtils.toAsyncInputStream;
 
@@ -57,37 +55,28 @@ public class ChatService {
     }
 
     public Mono<Void> join(Chat chat, User user) {
-        return this.chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())
+        return this.chatRepository.isUserInChat(chat.getId(), user.getId())
                 .flatMap(e -> {
-                    if(e.getType().equals(ChatEvent.Type.USER_JOINED)) {
+                    if(e) {
                         return Mono.error(new IllegalStateException("User already in group"));
+                    } else {
+                        return chatRepository.addUser(chat.getId(), user.getId());
                     }
-                    return Mono.<Void>empty();
-                })
-                .switchIfEmpty(createMembershipEvent(chat, user, ChatEvent.Type.USER_JOINED));
+                });
     }
 
     public Mono<Void> leave(Chat chat, User user) {
-        return this.chatRepository.findLastMembershipEventForChat(chat.getId(), user.getId())
-                .switchIfEmpty(Mono.error(userNotInGroupError()))
+        return this.chatRepository.isUserInChat(chat.getId(), user.getId())
                 .flatMap(e -> {
-                    if(e.getType().equals(ChatEvent.Type.USER_LEFT)) {
+                    if(e) {
+                        return chatRepository.removeUser(chat.getId(), user.getId());
+                    } else {
                         return Mono.error(userNotInGroupError());
                     }
-                    return createMembershipEvent(chat, user, ChatEvent.Type.USER_LEFT);
                 });
     }
 
     private static Exception userNotInGroupError() {
         return new IllegalStateException("User not in group");
-    }
-
-    private Mono<Void> createMembershipEvent(Chat chat, User user, ChatEvent.Type type) {
-        ChatEvent event = new ChatEvent();
-        event.setUserId(user.getId());
-        event.setType(type);
-        event.setTimestamp(OffsetDateTime.now());
-
-        return this.chatRepository.addEvent(chat.getId(), event);
     }
 }

@@ -14,8 +14,6 @@ public interface ChatCustomRepository {
 
     Mono<Boolean> isUserInChat(String chatId, String userId);
 
-    Mono<Integer> countEvents(String chatId);
-
     Mono<ChatEvent> findLastEventForUser(String chatId, String userId, ChatEvent.Type...type);
 
     Flux<String> findUsers(String chatId);

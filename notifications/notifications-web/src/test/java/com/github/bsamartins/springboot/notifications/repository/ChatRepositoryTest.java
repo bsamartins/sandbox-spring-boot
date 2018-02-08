@@ -152,6 +152,27 @@ class ChatRepositoryTest extends MongoIntegrationTest {
             }).verifyComplete();
     }
 
+    @Test
+    void isUserInChat() {
+        Chat chat1 = createAndSaveChat("c1");
+        User user1 = createAndSaveUser("u1");
+
+        StepVerifier.create(chatRepository.addUser(chat1.getId(), user1.getId()))
+                .verifyComplete();
+
+        StepVerifier.create(chatRepository.isUserInChat(chat1.getId(), user1.getId()))
+                .expectNext(true)
+                .verifyComplete();
+    }
+
+    @Test
+    void isUserInChat_not() {
+        Chat chat1 = createAndSaveChat("c1");
+        StepVerifier.create(chatRepository.isUserInChat(chat1.getId(), "x"))
+                .expectNext(false)
+                .verifyComplete();
+    }
+
     private User createAndSaveUser(String username) {
         User user = new User();
         user.setUsername(username);

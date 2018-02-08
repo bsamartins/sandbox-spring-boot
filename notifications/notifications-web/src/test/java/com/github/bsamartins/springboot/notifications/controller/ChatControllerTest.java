@@ -3,18 +3,14 @@ package com.github.bsamartins.springboot.notifications.controller;
 import com.github.bsamartins.springboot.notifications.domain.ChatCreate;
 import com.github.bsamartins.springboot.notifications.domain.File;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
-import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
 import com.github.bsamartins.springboot.notifications.test.ApplicationIntegrationTest;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.web.reactive.function.BodyInserters.empty;
@@ -68,28 +64,19 @@ class ChatControllerTest extends ApplicationIntegrationTest {
                 .expectStatus().isCreated();
     }
 
-    @NotNull
     private Chat createChat() {
         Chat chat = new Chat();
         chat.setName("test");
         chat.setPictureId("");
 
-        chatRepository.save(chat).block();
-        return chat;
+        return chatRepository.save(chat).block();
     }
 
     @Test
     void chatJoin_alreadyInChat() {
         User user = getDefaultUser();
-
         Chat chat = createChat();
 
-        ChatEvent chatEvent = new ChatEvent();
-        chatEvent.setUserId(user.getId());
-        chatEvent.setTimestamp(OffsetDateTime.now());
-        chatEvent.setType(ChatEvent.Type.USER_JOINED);
-
-        chatRepository.addUser(chat.getId(), user.getId()).block();
         chatRepository.addUser(chat.getId(), user.getId()).block();
 
         webClient.post().uri("/api/chats/{id}/memberships", chat.getId())
@@ -113,13 +100,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
     @Test
     void chatLeave() {
         User user = getDefaultUser();
-
         Chat chat = createChat();
-
-        ChatEvent chatEvent = new ChatEvent();
-        chatEvent.setUserId(user.getId());
-        chatEvent.setTimestamp(OffsetDateTime.now());
-        chatEvent.setType(ChatEvent.Type.USER_JOINED);
 
         chatRepository.addUser(chat.getId(), user.getId()).block();
 
@@ -132,13 +113,7 @@ class ChatControllerTest extends ApplicationIntegrationTest {
     @Test
     void chatLeave_alreadyLeftChat() {
         User user = getDefaultUser();
-
         Chat chat = createChat();
-
-        ChatEvent chatEvent = new ChatEvent();
-        chatEvent.setUserId(user.getId());
-        chatEvent.setTimestamp(OffsetDateTime.now());
-        chatEvent.setType(ChatEvent.Type.USER_LEFT);
 
         chatRepository.addUser(chat.getId(), user.getId()).block();
         chatRepository.removeUser(chat.getId(), user.getId()).block();

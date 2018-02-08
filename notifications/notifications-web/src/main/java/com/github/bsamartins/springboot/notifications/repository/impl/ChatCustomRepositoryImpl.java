@@ -85,24 +85,11 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
 
     @Override
     public Mono<Boolean> isUserInChat(String chatId, String userId) {
-        Query query = new Query(byId(chatId).and(userId).in("users"));
+        Query query = new Query(byId(chatId).and("users").is(userId));
         return reactiveMongoTemplate.find(query, Chat.class)
                 .singleOrEmpty()
                 .map(r -> true)
                 .switchIfEmpty(Mono.just(false));
-    }
-
-    @Override
-    public Mono<Integer> countEvents(String chatId) {
-        Aggregation aggregation = newAggregation(
-                match(byId(chatId)),
-                project().and("events").size().as("count"));
-
-        return reactiveMongoTemplate.aggregate(aggregation, COLLECTION_NAME, Map.class)
-                .log()
-                .singleOrEmpty()
-                .map(r -> (Integer) r.getOrDefault("count", 0L));
-
     }
 
     private static Criteria byId(String id) {

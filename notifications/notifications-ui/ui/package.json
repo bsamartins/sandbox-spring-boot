@@ -24,6 +24,7 @@
     "angular2-jwt": "^0.2.3",
     "core-js": "^2.4.1",
     "event-source": "git://github.com/AlexGalays/EventSource.git",
+    "ng-click-outside": "^3.2.0",
     "npm-check-updates": "^2.14.0",
     "rxjs": "^5.5.6",
     "sass-semantic-ui": "^2.2.12-3",

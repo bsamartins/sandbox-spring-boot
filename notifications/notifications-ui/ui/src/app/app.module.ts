@@ -16,9 +16,11 @@ import {ChatViewComponent} from "./chat/chat-view.component";
 import {RouterModule} from "@angular/router";
 import {MainViewComponent} from "./main-view.component";
 import {AuthenticationGuard} from "./authentication.guard";
-import {ChatGroupsListComponent} from "./chat/chatgroups-list.component";
+import {ChatListComponent} from "./chat/chat-list.component";
 import {ModalComponent} from "./modal/modal.component";
-import {ChatGroupsCreateComponent} from "./chat/chatgroups-create.component";
+import {ChatCreateComponent} from "./chat/chat-create.component";
+import {ChatSearchComponent} from "./chat/chat-search.component";
+import {ClickOutsideModule} from 'ng-click-outside';
 
 @NgModule({
   declarations: [
@@ -33,8 +35,9 @@ import {ChatGroupsCreateComponent} from "./chat/chatgroups-create.component";
     MainViewComponent,
 
     ChatViewComponent,
-    ChatGroupsListComponent,
-    ChatGroupsCreateComponent,
+    ChatListComponent,
+    ChatCreateComponent,
+    ChatSearchComponent,
     MessagesViewComponent
   ],
   imports: [
@@ -44,6 +47,7 @@ import {ChatGroupsCreateComponent} from "./chat/chatgroups-create.component";
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    ClickOutsideModule,
     AppRoutingModule,
     AuthModule,
     ServicesModule

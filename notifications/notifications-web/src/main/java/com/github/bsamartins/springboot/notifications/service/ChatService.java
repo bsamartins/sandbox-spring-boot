@@ -27,6 +27,10 @@ public class ChatService {
         return chatRepository.findById(id);
     }
 
+    public Flux<Chat> findAllForUser(User user) {
+        return chatRepository.findAllByUser(user.getId());
+    }
+
     public Flux<Chat> findAll() {
         return chatRepository.findAll();
     }
@@ -82,5 +86,9 @@ public class ChatService {
 
     public Flux<Chat> findAll(String query) {
         return this.chatRepository.findByNameContaining(query);
+    }
+
+    public Flux<String> findUsersByChat(String chatId) {
+        return this.chatRepository.findUsers(chatId);
     }
 }

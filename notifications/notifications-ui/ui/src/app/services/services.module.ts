@@ -5,7 +5,7 @@ import {AuthModule} from "./auth.module";
 import {MessageService} from "./message.service";
 import {HttpModule} from "@angular/http";
 import {UserService} from "./user.service";
-import {GroupService} from "./group.service";
+import {ChatService} from "./chat.service";
 
 @NgModule({
   declarations: [],
@@ -15,7 +15,7 @@ import {GroupService} from "./group.service";
     Sse,
     MessageService,
     UserService,
-    GroupService
+    ChatService
   ]
 })
 export class ServicesModule { }

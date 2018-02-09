@@ -102,7 +102,7 @@ class ChatRepositoryTest extends MongoIntegrationTest {
         chatRepository.addUser(chat2.getId(), user2.getId()).block();
         chatRepository.addUser(chat3.getId(), user2.getId()).block();
 
-        StepVerifier.create(chatRepository.findByUser(user1.getId()))
+        StepVerifier.create(chatRepository.findAllByUser(user1.getId()))
                 .assertNext(c -> assertEquals(chat1.getId(), c.getId()))
                 .assertNext(c -> assertEquals(chat2.getId(), c.getId()))
                 .verifyComplete();

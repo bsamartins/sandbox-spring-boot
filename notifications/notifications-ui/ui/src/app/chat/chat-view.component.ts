@@ -10,7 +10,7 @@ import {ModalComponent} from "../modal/modal.component";
     <div #chatGrid class="ui padded grid">
       <div class="row">
         <div class="four wide column">
-          <chatgroups-list></chatgroups-list>
+          <chat-list></chat-list>
         </div>
         <div class="messages eight wide column">
           <messages-view></messages-view>

@@ -8,6 +8,6 @@ import reactor.core.publisher.Flux;
 public interface ChatRepository extends ReactiveMongoRepository<Chat, String>, ChatCustomRepository {
 
     @Query("{ users: ?0 }")
-    Flux<Chat> findByUser(String userId);
+    Flux<Chat> findAllByUser(String userId);
 
 }

@@ -29,12 +29,13 @@ public class ChatController {
     }
 
     @GetMapping
-    public Mono<List<Chat>> findAll() {
-        return chatService.findAll().collectList();
+    public Mono<List<Chat>> findAll(@AuthenticationPrincipal CustomUser authUser) {
+        return chatService.findAllForUser(authUser.getUser())
+                .collectList();
     }
 
     @GetMapping(params = "query")
-    public Mono<List<Chat>> findByQuery(@RequestParam("query") String query) {
+    public Mono<List<Chat>> findAllByQuery(@RequestParam("query") String query) {
         return chatService.findAll(query).collectList();
     }
 
@@ -45,7 +46,16 @@ public class ChatController {
                 .switchIfEmpty(Mono.error(new Exception("what?")));
     }
 
-    @PostMapping(value = "/{id}/memberships")
+    @GetMapping(value = "/{id}/users")
+    public Mono<ResponseEntity<List<String>>> joinChat(@PathVariable("id") String chatId) {
+        return chatService.findById(chatId)
+                .flatMap(chat -> chatService.findUsersByChat(chatId)
+                        .collectList()
+                        .map(result -> ResponseEntity.ok().body(result)))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @PostMapping(value = "/{id}/users")
     public Mono<ResponseEntity> joinChat(@PathVariable("id") String chatId,
                                      @AuthenticationPrincipal CustomUser authUser) {
         return chatService.findById(chatId)
@@ -56,7 +66,7 @@ public class ChatController {
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
-    @DeleteMapping(value = "/{id}/memberships")
+    @DeleteMapping(value = "/{id}/users")
     public Mono<ResponseEntity> leaveChat(@PathVariable("id") String chatId,
                                          @AuthenticationPrincipal CustomUser authUser) {
         return chatService.findById(chatId)

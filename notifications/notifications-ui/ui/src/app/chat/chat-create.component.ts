@@ -1,12 +1,12 @@
 import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Group, GroupCreate} from "../services/types";
-import {GroupService} from "../services/group.service";
+import {Chat, ChatCreate} from "../services/types";
+import {ChatService} from "../services/chat.service";
 
 @Component({
-  selector: 'chatgroups-create',
-  styleUrls: ['./chatgroups-create.component.scss'],
+  selector: 'chat-create',
+  styleUrls: ['./chat-create.component.scss'],
   template: `
     <form class="ui form" [formGroup]="form">
       <div class="ui inverted dimmer" [class.active]="busy"></div>
@@ -31,11 +31,11 @@ import {GroupService} from "../services/group.service";
     </form>
   `
 })
-export class ChatGroupsCreateComponent {
+export class ChatCreateComponent {
 
   @ViewChild("fileInput") fileInput: ElementRef;
 
-  @Output() close: EventEmitter<Group> = new EventEmitter();
+  @Output() close: EventEmitter<Chat> = new EventEmitter();
 
   form: FormGroup;
   imageUrl: SafeUrl;
@@ -43,7 +43,7 @@ export class ChatGroupsCreateComponent {
   busy: boolean;
 
   constructor(private domSanitizer: DomSanitizer,
-              private groupService: GroupService) {
+              private groupService: ChatService) {
     this.form = new FormGroup({
       'image': new FormControl(null, Validators.required),
       'name': new FormControl(null, [Validators.required])
@@ -52,7 +52,7 @@ export class ChatGroupsCreateComponent {
 
   save(): void {
     let imageString: string = this.form.controls['image'].value;
-    let group: GroupCreate = {
+    let group: ChatCreate = {
       name: this.form.controls['name'].value,
       picture: {
         name: this.imageFile.name,

@@ -15,14 +15,14 @@ export interface User {
   username: string;
 }
 
-export class Group {
+export class Chat {
   id: string;
   name: string;
   pictureId: string;
   pictureUri: string;
 }
 
-export class GroupCreate {
+export class ChatCreate {
   name: string;
   picture: File;
 }

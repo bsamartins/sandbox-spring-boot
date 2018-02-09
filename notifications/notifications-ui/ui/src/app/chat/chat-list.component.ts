@@ -2,20 +2,27 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {BaseComponent} from "../base.component";
 import {AuthenticationService} from "../services/authentication.service";
 import {ModalComponent} from "../modal/modal.component";
-import {GroupService} from "../services/group.service";
-import {Group} from "../services/types";
+import {ChatService} from "../services/chat.service";
+import {Chat} from "../services/types";
 
 @Component({
-  selector: 'chatgroups-list',
-  styleUrls: ['./chatgroups-list.component.scss'],
+  selector: 'chat-list',
+  styleUrls: ['./chat-list.component.scss'],
   template: `
-    <modal #createModal modalSize="mini">       
+    <modal #createModal modalSize="mini">
       <div class="content">
-        <chatgroups-create (close)="onCloseCreateModal($event)"></chatgroups-create>
+        <chat-create (close)="onCloseCreateModal($event)"></chat-create>
       </div>
     </modal>
-    <div class="ui">
-      <button class="ui button" (click)="create()">New...</button>
+    <div class="search-section">
+      <div class="full-width item">
+        <chat-search (select)="joinChat($event)"></chat-search>
+      </div>
+      <div class="item">
+        <button class="ui circular icon button" (click)="create()">
+          <i class="icon add"></i>
+        </button>
+      </div>
     </div>
     <div class="ui middle aligned selection list">
       <div *ngFor="let group of groups" class="item">
@@ -27,19 +34,17 @@ import {Group} from "../services/types";
     </div>
   `
 })
-export class ChatGroupsListComponent extends BaseComponent implements OnInit {
-
+export class ChatListComponent extends BaseComponent implements OnInit {
   @ViewChild("createModal") createModal: ModalComponent;
-  groups: Group[] = [];
-
+  groups: Chat[] = [];
 
   constructor(private authenticationService: AuthenticationService,
-              private groupService: GroupService) {
+              private chatService: ChatService) {
     super(authenticationService);
   }
 
   ngOnInit(): void {
-    this.groupService.find().subscribe(d => {
+    this.chatService.find().subscribe(d => {
       this.groups = d;
     });
   }
@@ -50,10 +55,18 @@ export class ChatGroupsListComponent extends BaseComponent implements OnInit {
 
   onCloseCreateModal(event): void {
     if(event){
-      this.groupService.find().subscribe(d => {
+      this.chatService.find().subscribe(d => {
         this.groups = d;
       });
     }
     this.createModal.hide();
+  }
+
+  joinChat(chat: Chat): void {
+    this.chatService.join(chat)
+      .flatMap(x => this.chatService.find())
+      .subscribe(result => {
+        this.groups = result;
+      });
   }
 }

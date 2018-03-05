@@ -6,7 +6,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class MetricsSupplier implements BeatSupplier<Map<String, Double>> {
             }
 
             double value = StreamSupport.stream(meter.measure().spliterator(), false)
-                    .filter(measurement -> measurement.getStatistic() == Statistic.Value)
+                    .filter(measurement -> measurement.getStatistic() == Statistic.VALUE)
                     .mapToDouble(Measurement::getValue)
                     .sum();
             result.put(key, value);

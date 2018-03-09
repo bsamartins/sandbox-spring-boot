@@ -1,7 +1,7 @@
-import org.springframework.http.MediaType
+import org.apache.commons.io.IOUtils
+import org.springframework.web.reactive.function.BodyExtractors
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.io.InputStream
 import java.io.SequenceInputStream
@@ -14,35 +14,35 @@ private const val HOME_TIMELINE_URL: String = "https://api.twitter.com/1.1/statu
 private const val OAUTH_URL: String = "https://api.twitter.com/oauth2/token"
 //private const val OAUTH_URL: String = "http://localhost:7666/oauth2/token"
 
-private const val CONSUMER_KEY: String = "15047214-moI4vxTzyeEKlI41wA2YGVBqRdLiX5DFDmSS8FZTM"
-private const val CONSUMER_SECRET: String = "dKACvv273jhmpRJGawqCgXPKdngpRHhor4QBiEDUpp06u"
+private const val CONSUMER_KEY: String = ""
+private const val CONSUMER_SECRET: String = ""
 
 fun main(args: Array<String>) {
     val lock: CountDownLatch = CountDownLatch(1)
     val token: Token = requestToken().block()
     val t: String? = Base64.getEncoder().encodeToString("${token.token_type} ${token.access_token}".toByteArray())
-//    WebClient.builder()
-//            .baseUrl(HOME_TIMELINE_URL)
-//            .defaultHeader("Authorization", "Basic ${t}")
-//            .build()
-//            .get()
-//            .exchange()
-//            .flatMap { clientResponse ->
-//                if(clientResponse.statusCode().is2xxSuccessful) {
-//                    clientResponse.body(BodyExtractors.toDataBuffers())
-//                            .collect(::InputStreamCollector, { t, dataBuffer -> t.collectInputStream(dataBuffer.asInputStream()) })
-//                } else {
-//                    Mono.error(Exception("Response Error: ${clientResponse.statusCode()}"))
-//                }
-//            }.map { inputStream -> IOUtils.toString(inputStream.getInputStream(), "utf-8") }
-//            .doOnError { lock.countDown() }
-//            .subscribe { data ->
-//                println("*********************")
-//                println(data)
-//                println("*********************")
-//                lock.countDown()
-//            }
-//    lock.await()
+    WebClient.builder()
+            .baseUrl(HOME_TIMELINE_URL)
+            .defaultHeader("Authorization", "Basic ${t}")
+            .build()
+            .get()
+            .exchange()
+            .flatMap { clientResponse ->
+                if(clientResponse.statusCode().is2xxSuccessful) {
+                    clientResponse.body(BodyExtractors.toDataBuffers())
+                            .collect(::InputStreamCollector, { t, dataBuffer -> t.collectInputStream(dataBuffer.asInputStream()) })
+                } else {
+                    Mono.error(Exception("Response Error: ${clientResponse.statusCode()}"))
+                }
+            }.map { inputStream -> IOUtils.toString(inputStream.getInputStream(), "utf-8") }
+            .doOnError { lock.countDown() }
+            .subscribe { data ->
+                println("*********************")
+                println(data)
+                println("*********************")
+                lock.countDown()
+            }
+    lock.await()
 }
 
 // Encodes the consumer key and secret to create the basic authorization key
@@ -59,7 +59,7 @@ fun encodeKeys(consumerKey: String, consumerSecret: String): String {
 
 fun requestToken(): Mono<Token> {
     val authorizationHeader: String = encodeKeys(CONSUMER_KEY, CONSUMER_SECRET)
-    WebClient.builder()
+    return WebClient.builder()
             .baseUrl(OAUTH_URL)
             .defaultHeader("Authorization", "Basic $authorizationHeader")
             .build()
@@ -68,9 +68,15 @@ fun requestToken(): Mono<Token> {
             .body(BodyInserters.fromFormData("grant_type", "client_credentials"))
             .exchange()
             .flatMap { response ->
-                Mono.zip(Mono.from(response.statusCode()), response.bodyToMono(Token::class.java))
+                if(response.statusCode().isError) {
+                    response.bodyToMono(String::class.java)
+                            .flatMap { text ->
+                                throw Exception("Error retrieving credentials [${response.statusCode()}]: $text ")
+                            }
+                } else {
+                    response.bodyToMono(Token::class.java)
+                }
             }
-    return Mono.empty()
 }
 
 class InputStreamCollector {

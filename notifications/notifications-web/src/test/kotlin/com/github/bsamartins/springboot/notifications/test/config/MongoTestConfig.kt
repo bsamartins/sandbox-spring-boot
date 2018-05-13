@@ -24,6 +24,6 @@ open class MongoTestConfig: MongoConfig() {
 
     @Override
     override fun reactiveMongoClient(): MongoClient {
-        return MongoClients.create(String.format("mongodb://localhost:%d", getMongoPort()));
+        return MongoClients.create("mongodb://localhost:${getMongoPort()}")
     }
 }

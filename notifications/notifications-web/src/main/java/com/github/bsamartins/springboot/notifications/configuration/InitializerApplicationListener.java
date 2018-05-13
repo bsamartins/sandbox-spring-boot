@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class InitializerApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
@@ -19,14 +20,16 @@ public class InitializerApplicationListener implements ApplicationListener<Conte
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        User user1 = new User();
-        user1.setUsername("user1");
-        user1.setPassword(passwordEncoder.encode("password"));
-        userRepository.save(user1).subscribe();
+        createUser("user1", "password").block();
+        createUser("user2", "password").block();
+    }
 
-        User user2 = new User();
-        user2.setUsername("user2");
-        user2.setPassword(passwordEncoder.encode("password"));
-        userRepository.save(user2).subscribe();
+    private Mono<User> createUser(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+
+        return userRepository.findByUsername(username)
+                .switchIfEmpty(userRepository.save(user));
     }
 }

@@ -2,7 +2,7 @@ package com.github.bsamartins.springboot.notifications.controller
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message
 import com.github.bsamartins.springboot.notifications.domain.persistence.User
-import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher
+import com.github.bsamartins.springboot.notifications.messaging.ChatStreams
 import com.github.bsamartins.springboot.notifications.repository.MessageRepository
 import com.github.bsamartins.springboot.notifications.repository.UserRepository
 import com.github.bsamartins.springboot.notifications.test.ApplicationIntegrationTest
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.http.MediaType
+import org.springframework.messaging.support.MessageBuilder
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -34,7 +35,7 @@ class MessageControllerTest: ApplicationIntegrationTest() {
     private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var messagePublisher: RedisMessagePublisher<com.github.bsamartins.springboot.notifications.domain.persistence.Message>
+    private lateinit var chatStreams: ChatStreams;
 
     private lateinit var user: User
 
@@ -74,7 +75,9 @@ class MessageControllerTest: ApplicationIntegrationTest() {
         message.userId = user.id
         messageRepository.save(message).block()
 
-        Mono.delay(Duration.ofSeconds(1)).subscribe { _ -> messagePublisher.publish(message)}
+        Mono.delay(Duration.ofSeconds(1))
+                .doOnNext{ _ -> chatStreams.outboundGreetings().send(MessageBuilder.withPayload(message).build()) }
+                .block()
 
         val result = webClient.get().uri("/api/messages/stream")
                 .headers(withUser())

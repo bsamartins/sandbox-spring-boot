@@ -5,6 +5,7 @@ import com.github.bsamartins.springboot.notifications.configuration.WebFluxSecur
 import com.github.bsamartins.springboot.notifications.domain.persistence.User
 import com.github.bsamartins.springboot.notifications.repository.UserRepository
 import com.github.bsamartins.springboot.notifications.security.jwt.JWTAuthenticationService
+import com.github.bsamartins.springboot.notifications.test.config.MongoTestConfig
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -37,7 +38,7 @@ import java.util.function.Consumer
         MongoTestConfig::class,
         TestConfig::class,
         TestSecurityConfig::class
-])
+], initializers = [KafkaApplicationContextInitializer::class])
 abstract class ApplicationIntegrationTest {
 
     companion object {

@@ -33,7 +33,7 @@ repositories {
 
 
 ext {
-    springCloudVersion = 'Finchley.M5'
+    springCloudVersion = 'Finchley.RC1'
 }
 
 dependencies {
@@ -43,10 +43,11 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-    compile('org.springframework.boot:spring-boot-starter-data-redis')
+    compile('org.springframework.cloud:spring-cloud-stream')
+    compile('org.springframework.cloud:spring-cloud-starter-stream-kafka')
 
     compile('io.jsonwebtoken:jjwt:0.7.0')
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    compile('org.apache.commons:commons-lang3:3.7')
     compile('pt.bsamartins.spring.data:spring-data-mongo:1.0.0')
 
     compile project(':notifications-ui')
@@ -56,13 +57,14 @@ dependencies {
     runtime('org.glassfish:javax.el:3.0.1-b08')
     runtime('org.hibernate.validator:hibernate-validator:6.0.7.Final')
 
-    testCompile('org.testcontainers:testcontainers:1.5.1')
+    testCompile('org.testcontainers:testcontainers:1.7.2')
+    testCompile('org.testcontainers:kafka:1.7.2')
     testCompile('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit'
     }
     testCompile('io.projectreactor:reactor-test')
     testCompile('org.mockito:mockito-core:2.18.3')
-    testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '2.18.3'
+    testCompile('org.mockito:mockito-junit-jupiter:2.18.3')
     testCompile('org.junit.jupiter:junit-jupiter-api:5.2.0')
     testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
 }

@@ -1,12 +1,12 @@
 package com.github.bsamartins.springboot.notifications.service;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Message;
-import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher;
+import com.github.bsamartins.springboot.notifications.messaging.ChatStreams;
 import com.github.bsamartins.springboot.notifications.repository.MessageRepository;
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,18 +19,14 @@ public class MessageService {
     private static Logger log = LoggerFactory.getLogger(MessageService.class);
 
     @Autowired
-    private RedisMessagePublisher messagePublisher;
-
-    @Autowired
     private MessageRepository repository;
 
     @Autowired
-    private Publisher<com.github.bsamartins.springboot.notifications.messaging.Message<Message>> messagePubSub;
-
+    private ChatStreams chatStreams;
 
     public Mono<Message> save(Message msg) {
         return repository.save(msg)
-                .doOnNext(m -> messagePublisher.publish(m));
+                .doOnNext(this::publishChatEvent);
     }
 
     public Mono<List<Message>> getMessages() {
@@ -39,8 +35,16 @@ public class MessageService {
     }
 
     public Flux<Message> stream() {
-        return Flux.from(this.messagePubSub)
-                .map(com.github.bsamartins.springboot.notifications.messaging.Message::getPayload);
+        return Flux.empty();
+//        return Flux.from(this.chatStreams.inboundGreetings())
+//                .map(com.github.bsamartins.springboot.notifications.messaging.Message::getPayload);
+    }
+
+    private void publishChatEvent(Message msg) {
+        chatStreams.outboundGreetings()
+                .send(MessageBuilder
+                        .withPayload(msg)
+                        .build());
     }
 
 }

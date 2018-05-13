@@ -8,3 +8,12 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+  kafka:
+    image: spotify/kafka
+#    hostname: kafka.local
+    environment:
+      ADVERTISED_HOST: localhost
+      ADVERTISED_PORT: 9092
+    ports:
+    - "9092:9092"
+    - "2181:2181"

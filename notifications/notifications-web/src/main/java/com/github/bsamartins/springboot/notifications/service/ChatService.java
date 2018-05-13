@@ -31,8 +31,8 @@ public class ChatService {
         return chatRepository.findAllByUser(user.getId());
     }
 
-    public Flux<Chat> findAll(String query, User user) {
-        return chatRepository.findByNameContaining(query, user);
+    public Flux<Chat> findAll(String query, String userId) {
+        return chatRepository.findByNameContaining(query, userId);
     }
 
     public Mono<Chat> create(Chat chat, File chatPicture) {

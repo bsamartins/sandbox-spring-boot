@@ -2,7 +2,6 @@ package com.github.bsamartins.springboot.notifications.repository.impl;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
 import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
-import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatCustomRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -41,7 +40,7 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
         Criteria eventCriteria = where("userId").is(userId);
         if(types != null) {
             List<String> eventTypes = Arrays.stream(types)
-                    .map(x -> x.toString())
+                    .map(Object::toString)
                     .collect(toList());
             eventCriteria.and("type").in(eventTypes);
         }
@@ -114,14 +113,16 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
     }
 
     @Override
-    public Flux<Chat> findByNameContaining(String name, User user) {
+    public Flux<Chat> findByNameContaining(String name, String userId) {
         String normalizedName = StringUtils.normalizeSpace(name);
         normalizedName = normalizedName.replaceAll(" ", ".*");
         normalizedName = StringUtils.prependIfMissing(normalizedName, ".*");
         normalizedName = StringUtils.appendIfMissing(normalizedName, ".*");
 
-        Criteria searchCriteria = where("name").regex(normalizedName, "i")
-                .and("users").ne(user.getId());
+        Criteria searchCriteria = where("name").regex(normalizedName, "i");
+        if(userId != null) {
+            searchCriteria = searchCriteria.and("users").ne(userId);
+        }
 
         Query query = new Query(searchCriteria);
         return reactiveMongoTemplate.find(query, Chat.class);

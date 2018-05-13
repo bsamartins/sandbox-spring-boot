@@ -36,7 +36,7 @@ public class ChatController {
 
     @GetMapping(params = "query")
     public Mono<List<Chat>> findAllByQuery(@RequestParam("query") String query, @AuthenticationPrincipal CustomUser user) {
-        return chatService.findAll(query, user.getUser()).collectList();
+        return chatService.findAll(query, user.getUser().getId()).collectList();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

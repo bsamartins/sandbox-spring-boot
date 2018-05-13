@@ -35,3 +35,4 @@ microservices/config/build
 microservices/registry/build
 microservices/gateway/build
 microservices/test-service/build
+mongo-reactive/out

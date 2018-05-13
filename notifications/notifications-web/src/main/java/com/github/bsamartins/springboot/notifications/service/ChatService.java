@@ -4,12 +4,12 @@ import com.github.bsamartins.springboot.notifications.domain.File;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 
 import static com.github.bsamartins.springboot.notifications.InputStreamUtils.toAsyncInputStream;
@@ -31,8 +31,8 @@ public class ChatService {
         return chatRepository.findAllByUser(user.getId());
     }
 
-    public Flux<Chat> findAll() {
-        return chatRepository.findAll();
+    public Flux<Chat> findAll(String query, User user) {
+        return chatRepository.findByNameContaining(query, user);
     }
 
     public Mono<Chat> create(Chat chat, File chatPicture) {
@@ -82,10 +82,6 @@ public class ChatService {
 
     private static Exception userNotInGroupError() {
         return new IllegalStateException("User not in group");
-    }
-
-    public Flux<Chat> findAll(String query) {
-        return this.chatRepository.findByNameContaining(query);
     }
 
     public Flux<String> findUsersByChat(String chatId) {

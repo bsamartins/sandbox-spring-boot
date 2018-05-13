@@ -2,6 +2,7 @@ package com.github.bsamartins.springboot.notifications.repository.impl;
 
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
 import com.github.bsamartins.springboot.notifications.domain.persistence.ChatEvent;
+import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatCustomRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -113,13 +114,16 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
     }
 
     @Override
-    public Flux<Chat> findByNameContaining(String name) {
+    public Flux<Chat> findByNameContaining(String name, User user) {
         String normalizedName = StringUtils.normalizeSpace(name);
         normalizedName = normalizedName.replaceAll(" ", ".*");
         normalizedName = StringUtils.prependIfMissing(normalizedName, ".*");
         normalizedName = StringUtils.appendIfMissing(normalizedName, ".*");
 
-        Query query = new Query(where("name").regex(normalizedName, "i"));
+        Criteria searchCriteria = where("name").regex(normalizedName, "i")
+                .and("users").ne(user.getId());
+
+        Query query = new Query(searchCriteria);
         return reactiveMongoTemplate.find(query, Chat.class);
     }
 }

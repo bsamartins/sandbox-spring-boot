@@ -3,7 +3,7 @@ logging:
       root: info
       com.github.bsamartins.springboot.notifications: debug
       org.springframework: info
-      org.springframework.data: error
+      org.springframework.data: debug
       org.springframework.beans: info
       org.springframework.security: info
       org.hibernate: off
@@ -15,3 +15,11 @@ app:
     jwt:
       secret: SecretKeyToGenJWTs
       duration: PT1H
+
+redis:
+  hostName: localhost
+  port: 6379
+
+mongodb:
+  hostname: localhost
+  port: 27017

@@ -25,8 +25,11 @@ export class ChatService {
     }).map(r => r.json());
   }
 
-  join(chat: Chat): Observable<any> {
-    return this.authHttp.post(`/api/chats/${chat.id}/users`, null);
+  join(chatId: string): Observable<any> {
+    return this.authHttp.post(`/api/chats/${chatId}/users`, null);
   }
 
+  users(chatId: string): Observable<string[]> {
+    return this.authHttp.get(`/api/chats/${chatId}/users`).map(r => r.json());
+  }
 }

@@ -2,7 +2,7 @@ export interface Message {
   id: number;
   text: string;
   timestamp: string;
-  userId: number;
+  userId: string;
 }
 
 export interface Token {
@@ -11,8 +11,9 @@ export interface Token {
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
+  pictureUri: string;
 }
 
 export class Chat {

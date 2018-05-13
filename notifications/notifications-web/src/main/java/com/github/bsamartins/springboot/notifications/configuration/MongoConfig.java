@@ -1,10 +1,10 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
-import com.github.bsamartins.springboot.notifications.configuration.support.DockerContainerBean;
 import com.github.bsamartins.springboot.notifications.data.mongo.converter.DateToOffsetDateTimeConverter;
 import com.github.bsamartins.springboot.notifications.data.mongo.converter.OffsetDateTimeToDateConverter;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -25,6 +25,12 @@ import java.util.List;
 @Configuration
 public class MongoConfig extends AbstractReactiveMongoConfiguration {
 
+    @Value("${mongodb.hostname}")
+    private String mongoHostName;
+
+    @Value("${mongodb.port}")
+    private int mongoPort;
+
     @Bean
     public LoggingEventListener mongoEventListener() {
         return new LoggingEventListener();
@@ -32,24 +38,13 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
 
     @Override
     @Bean
-    @DependsOn("mongoDockerContainer")
     public MongoClient reactiveMongoClient() {
-        return MongoClients.create(String.format("mongodb://localhost:%d", mongoPort()));
+        return MongoClients.create(String.format("mongodb://%s:%d", mongoHostName, mongoPort));
     }
 
     @Override
     protected String getDatabaseName() {
         return "reactive";
-    }
-
-    @Bean
-    public DockerContainerBean mongoDockerContainer(int mongoPort) {
-        return new DockerContainerBean("mongo:latest", mongoPort, 27017);
-    }
-
-    @Bean
-    public int mongoPort() {
-        return SocketUtils.findAvailableTcpPort();
     }
 
     @Bean

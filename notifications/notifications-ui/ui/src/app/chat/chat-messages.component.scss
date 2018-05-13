@@ -1,0 +1,9 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui.feed {
+  flex-grow: 1;
+}

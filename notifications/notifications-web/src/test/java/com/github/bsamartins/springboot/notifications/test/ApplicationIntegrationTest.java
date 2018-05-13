@@ -36,6 +36,7 @@ import java.util.function.Consumer;
         MongoDataAutoConfiguration.class,
         MongoReactiveDataAutoConfiguration.class })
 @ContextConfiguration(classes = {
+        MongoIntegrationTest.MongoTestConfig.class,
         ApplicationIntegrationTest.TestConfig.class,
         ApplicationIntegrationTest.TestSecurityConfig.class
 })

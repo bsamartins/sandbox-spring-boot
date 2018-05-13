@@ -1,17 +1,18 @@
 package com.github.bsamartins.springboot.notifications.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.bsamartins.springboot.notifications.configuration.support.DockerContainerBean;
 import com.github.bsamartins.springboot.notifications.messaging.Message;
 import com.github.bsamartins.springboot.notifications.messaging.RedisMessagePublisher;
 import com.github.bsamartins.springboot.notifications.messaging.SinkMessageListener;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -19,17 +20,22 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.util.SocketUtils;
-import org.testcontainers.shaded.com.google.common.collect.Lists;
 import reactor.core.publisher.Flux;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Function;
 
 @Configuration
 public class RedisConfig {
 
     public static final String MESSAGE_QUEUE = "message-queue";
+
+    @Value("${redis.hostName}")
+    private String redisHostName;
+
+    @Value("${redis.port}")
+    private int redisPort;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -52,19 +58,10 @@ public class RedisConfig {
     }
 
     @Bean
-    public DockerContainerBean redisDockerContainer() {
-        return new DockerContainerBean("redis:latest", redisPort(), 6379);
-    }
-
-    @Bean
-    public int redisPort() {
-        return SocketUtils.findAvailableTcpPort();
-    }
-
-    @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setPort(redisPort());
+        redisStandaloneConfiguration.setHostName(redisHostName);
+        redisStandaloneConfiguration.setPort(redisPort);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
@@ -92,7 +89,7 @@ public class RedisConfig {
     }
 
     private Flux<org.springframework.data.redis.connection.Message> registerTopicPublisher(RedisMessageListenerContainer redisMessageListenerContainer, Topic topic) {
-        return registerTopicPublisher(redisMessageListenerContainer, Lists.newArrayList(topic));
+        return registerTopicPublisher(redisMessageListenerContainer, Collections.singleton(topic));
     }
 
     private Flux<org.springframework.data.redis.connection.Message> registerTopicPublisher(RedisMessageListenerContainer redisMessageListenerContainer, Collection<? extends Topic> topics) {

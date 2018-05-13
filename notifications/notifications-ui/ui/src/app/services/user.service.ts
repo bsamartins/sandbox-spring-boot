@@ -9,7 +9,7 @@ export class UserService {
   constructor(private authHttp: AuthHttp) {
   }
 
-  findById(id: number): Observable<User> {
+  findById(id: string): Observable<User> {
     return this.authHttp.get(`/api/users/${id}`)
       .map(res => res.json());
   }

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {BaseComponent} from "../base.component";
 import {AuthenticationService} from "../services/authentication.service";
 import {ModalComponent} from "../modal/modal.component";
@@ -25,18 +25,23 @@ import {Chat} from "../services/types";
       </div>
     </div>
     <div class="ui middle aligned selection list">
-      <div *ngFor="let group of groups" class="item">
-        <img class="ui avatar image" src="{{ group.pictureUri }}">
+      <a *ngFor="let chat of chats" class="item" [routerLink]="['/chats', chat.id]" 
+         [class.active]="isActive(chat)">
+        <img class="ui avatar image" src="{{ chat.pictureUri }}">
         <div class="content">
-          <div class="header">{{ group.name }}</div>
+          <div class="header">{{ chat.name }}</div>
         </div>
-      </div>
+      </a>
     </div>
   `
 })
 export class ChatListComponent extends BaseComponent implements OnInit {
+
   @ViewChild("createModal") createModal: ModalComponent;
-  groups: Chat[] = [];
+
+  @Input() activeChatId: string;
+
+  chats: Chat[] = [];
 
   constructor(private authenticationService: AuthenticationService,
               private chatService: ChatService) {
@@ -45,7 +50,7 @@ export class ChatListComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatService.find().subscribe(d => {
-      this.groups = d;
+      this.chats = d;
     });
   }
 
@@ -56,17 +61,21 @@ export class ChatListComponent extends BaseComponent implements OnInit {
   onCloseCreateModal(event): void {
     if(event){
       this.chatService.find().subscribe(d => {
-        this.groups = d;
+        this.chats = d;
       });
     }
     this.createModal.hide();
   }
 
   joinChat(chat: Chat): void {
-    this.chatService.join(chat)
+    this.chatService.join(chat.id)
       .flatMap(x => this.chatService.find())
       .subscribe(result => {
-        this.groups = result;
+        this.chats = result;
       });
+  }
+
+  isActive(chat: Chat): boolean {
+    return chat.id == this.activeChatId;
   }
 }

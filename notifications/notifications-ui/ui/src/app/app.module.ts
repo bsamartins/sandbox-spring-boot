@@ -8,11 +8,11 @@ import {NavbarComponent} from "./navbar.component";
 import {LoginComponent} from "./login.component";
 import {ServicesModule} from "./services/services.module";
 import {AuthModule} from "./services/auth.module";
-import {MessagesViewComponent} from "./chat/messages-view.component";
+import {ChatMessagesComponent} from "./chat/chat-messages.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppRoutingModule} from "./app-routing.module";
 import {HomeViewComponent} from "./home-view.component";
-import {ChatViewComponent} from "./chat/chat-view.component";
+import {ChatViewComponent} from "./chat/chat.component";
 import {RouterModule} from "@angular/router";
 import {MainViewComponent} from "./main-view.component";
 import {AuthenticationGuard} from "./authentication.guard";
@@ -21,6 +21,7 @@ import {ModalComponent} from "./modal/modal.component";
 import {ChatCreateComponent} from "./chat/chat-create.component";
 import {ChatSearchComponent} from "./chat/chat-search.component";
 import {ClickOutsideModule} from 'ng-click-outside';
+import {ChatUsersComponent} from "./chat/chat-users.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {ClickOutsideModule} from 'ng-click-outside';
     ChatListComponent,
     ChatCreateComponent,
     ChatSearchComponent,
-    MessagesViewComponent
+    ChatMessagesComponent,
+    ChatUsersComponent
   ],
   imports: [
     RouterModule,

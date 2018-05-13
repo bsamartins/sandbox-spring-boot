@@ -3,30 +3,30 @@ package com.github.bsamartins.springboot.notifications.service;
 import com.github.bsamartins.springboot.notifications.domain.persistence.Chat;
 import com.github.bsamartins.springboot.notifications.domain.persistence.User;
 import com.github.bsamartins.springboot.notifications.repository.ChatRepository;
-import org.easymock.EasyMockSupport;
-import org.easymock.Mock;
-import org.easymock.MockType;
-import org.easymock.TestSubject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.easymock.EasyMock.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ChatServiceTest {
 
-    @TestSubject
+    @InjectMocks
     private ChatService chatService;
 
-    @Mock(type = MockType.STRICT)
+    @Mock
     private ChatRepository chatRepository;
 
     @BeforeEach
     void setup() {
         chatService = new ChatService();
-
-        EasyMockSupport.injectMocks(this);
     }
 
     @Test
@@ -34,10 +34,8 @@ class ChatServiceTest {
         Chat chat = new Chat();
         User user = new User();
 
-        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(false));
-        expect(chatRepository.addUser(chat.getId(), user.getId())).andReturn(Mono.empty());
-
-        replay(chatRepository);
+        when(chatRepository.isUserInChat(chat.getId(), user.getId())).thenReturn(Mono.just(false));
+        when(chatRepository.addUser(chat.getId(), user.getId())).thenReturn(Mono.empty());
 
         StepVerifier.create(chatService.join(chat, user))
                 .verifyComplete();
@@ -50,9 +48,7 @@ class ChatServiceTest {
         Chat chat = new Chat();
         User user = new User();
 
-        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(true));
-
-        replay(chatRepository);
+        when(chatRepository.isUserInChat(chat.getId(), user.getId())).thenReturn(Mono.just(true));
 
         StepVerifier.create(chatService.join(chat, user))
                 .verifyError(IllegalStateException.class);
@@ -65,9 +61,7 @@ class ChatServiceTest {
         Chat chat = new Chat();
         User user = new User();
 
-        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(false));
-
-        replay(chatRepository);
+        when(chatRepository.isUserInChat(chat.getId(), user.getId())).thenReturn(Mono.just(false));
 
         StepVerifier.create(chatService.leave(chat, user))
                 .verifyError(IllegalStateException.class);
@@ -80,10 +74,8 @@ class ChatServiceTest {
         Chat chat = new Chat();
         User user = new User();
 
-        expect(chatRepository.isUserInChat(chat.getId(), user.getId())).andReturn(Mono.just(true));
-        expect(chatRepository.removeUser(chat.getId(), user.getId())).andReturn(Mono.empty());
-
-        replay(chatRepository);
+        when(chatRepository.isUserInChat(chat.getId(), user.getId())).thenReturn(Mono.just(true));
+        when(chatRepository.removeUser(chat.getId(), user.getId())).thenReturn(Mono.empty());
 
         StepVerifier.create(chatService.leave(chat, user))
                 .verifyComplete();

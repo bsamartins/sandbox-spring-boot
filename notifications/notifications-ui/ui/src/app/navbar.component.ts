@@ -13,7 +13,7 @@ import {BaseComponent} from "./base.component";
           Project Name
         </a>
         <a routerLink="/" class="item">Home</a>
-        <a routerLink="/chat" class="item">Chat</a>
+        <a routerLink="/chats" class="item">Chat</a>
 
         <div class="right menu">
           <div class="item">

@@ -1,7 +1,0 @@
-rootProject.name = 'microservices'
-include 'authentication'
-include 'config'
-include 'registry'
-include 'gateway'
-include 'test-service'
-

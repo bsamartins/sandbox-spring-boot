@@ -1,4 +1,0 @@
-include 'kafka-source'
-include 'kafka-stream'
-
-rootProject.name = 'kafka-streams'

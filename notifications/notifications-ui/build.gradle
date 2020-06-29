@@ -1,5 +1,0 @@
-apply plugin: 'java'
-apply from: 'gradle/angular.gradle'
-
-jar.dependsOn.add(ngAssemble)
-assemble.dependsOn(ngAssemble)

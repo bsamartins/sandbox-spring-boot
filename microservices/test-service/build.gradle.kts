@@ -3,12 +3,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 }
 
-application {
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
     mainClassName = "pt.bsamartins.sandbox.springboot.microservices.testservice.TestServiceApplication"
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = application.mainClassName
-    }
 }

@@ -12,11 +12,8 @@ subprojects {
 
         testImplementation("org.junit:junit-jupiter-api")
     }
-}
 
-tasks.register<Exec>("composeBuild") {
-    subprojects.forEach {
-        dependsOn("${it.name}:build")
+    tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootBuildImage> {
+        imageName = "bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/${project.name}"
     }
-    commandLine = listOf("docker-compose", "build")
 }

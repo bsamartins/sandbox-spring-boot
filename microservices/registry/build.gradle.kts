@@ -4,12 +4,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-netflix-eureka-server")
 }
 
-application {
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
     mainClassName = "pt.bsamartins.sandbox.springboot.microservices.registry.RegistryApplication"
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = application.mainClassName
-    }
 }

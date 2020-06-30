@@ -1,21 +1,17 @@
-version: '3.4'
+version: '3.7'
 services:
-
   config:
-    build: ./config/
-    image: bsamartins-docker-registry.bintray.io/cloud-microservices/config
+    image: bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/config
     expose:
       - '8888'
 
   authentication:
-    build: ./authentication/
-    image: bsamartins-docker-registry.bintray.io/cloud-microservices/authentication
+    image: bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/authentication
     expose:
       - '8888'
 
   registry:
-    build: ./registry/
-    image: bsamartins-docker-registry.bintray.io/cloud-microservices/registry
+    image: bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/registry
     expose:
       - '8761'
     ports:
@@ -24,8 +20,7 @@ services:
       - config
 
   gateway:
-    build: ./gateway/
-    image: bsamartins-docker-registry.bintray.io/cloud-microservices/gateway
+    image: bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/gateway
     ports:
       - 9000:8080
     links:
@@ -33,8 +28,7 @@ services:
       - config
 
   test-service:
-    build: ./test-service/
-    image: bsamartins-docker-registry.bintray.io/cloud-microservices/test-service
+    image: bsamartins-docker-registry.bintray.io/sandbox-spring-boot-microservices/test-service
     expose:
       - 8080
     links:
